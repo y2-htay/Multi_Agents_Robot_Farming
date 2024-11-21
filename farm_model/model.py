@@ -415,6 +415,8 @@ class FarmModel(Model):
         self.grid.place_agent(base_agent, base_position)
         self.schedule.add(base_agent)
         
+    def step(self):
+        self.schedule.step()
         
         
 

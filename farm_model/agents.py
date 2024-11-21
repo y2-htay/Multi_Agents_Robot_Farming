@@ -64,36 +64,36 @@ class PickerRobot(Agent):
         
         
         
-    # def move_randomly(self):    # responbile for movign the robot 
-    #     """ 
-    #     Move the robot to a random neighboring cell, avoiding trees 
-    #     """
-    #     from model import TreeAgent    # imported locally only before they are called / if imported globally at the top, it is circulr dependency with model.py
-    #     possible_steps = self.model.grid.get_neighborhood(
-    #         self.pos, moore = True, include_center=False
-    #     )
-    #     valid_steps = [step for step in possible_steps if not any(isinstance (a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))]
-    #     print(f"PickerRobot {self.unique_id} valid steps: {valid_steps}")    # debugging 
-    #     if valid_steps:
-    #         new_position = self.random.choie(valid_steps)
-    #         self.model.grid.move_agent(self, new_position)
-    #         print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
+    def move_randomly(self):    # responbile for movign the robot 
+        """ 
+        Move the robot to a random neighboring cell, avoiding trees 
+        """
+        from model import TreeAgent    # imported locally only before they are called / if imported globally at the top, it is circulr dependency with model.py
+        possible_steps = self.model.grid.get_neighborhood(
+            self.pos, moore = True, include_center=False
+        )
+        valid_steps = [step for step in possible_steps if not any(isinstance (a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))]
+        print(f"PickerRobot {self.unique_id} valid steps: {valid_steps}")    # debugging 
+        if valid_steps:
+            new_position = self.random.choice(valid_steps)
+            self.model.grid.move_agent(self, new_position)
+            print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
             
             
             
     
-    #temporary function to test random movement of the robots without constrainst , no restrictions to water and  trees.
-    def move_randomly(self):
-        """
-        Move the robot to a random neighboring cell, without any restrictions.
-        """
-        possible_steps = self.modle.grid.get_neighborhood(
-            self.pos, moore = True, include_center = False 
-        )
-        if possible_steps:
-            new_position = self.random.choice(possible_steps)
-            self.modle.grid.move_agent(self, new_position)
-            print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
+    # #temporary function to test random movement of the robots without constrainst , no restrictions to water and  trees.
+    # def move_randomly(self):
+    #     """
+    #     Move the robot to a random neighboring cell, without any restrictions.
+    #     """
+    #     possible_steps = self.model.grid.get_neighborhood(
+    #         self.pos, moore = True, include_center = False 
+    #     )
+    #     if possible_steps:
+    #         new_position = self.random.choice(possible_steps)
+    #         self.model.grid.move_agent(self, new_position)
+    #         print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
             
             
             
@@ -105,6 +105,7 @@ class PickerRobot(Agent):
         """ 
         Pick the strawberry if one is in the current cell
         """
+        print(f"Hey I am ready to pickkkkkkkkkk fucking pickkkkkkk")
         from model import CropAgent     #imported locally 
         crops = [ a for a in self.model.grid.get_cell_list_contents(self.pos)if isinstance (a, CropAgent)]
         if crops:
@@ -112,6 +113,7 @@ class PickerRobot(Agent):
             self.model.grid.remove_agent(crop)
             self.storage += 1
             print(f"Picked a strawberry at {self.pos} . Storage: {self.storage}")
+            
             
     
     
@@ -138,8 +140,24 @@ class PickerRobot(Agent):
         pass
     
     
+    # Djoikstra's algorithm
     
-        
+    #station name--> tuples()
+    
+    #covert the tuples into strings
+    
+    #store the hash in place of the station
+    
+    #when making the hash, also save the
+    
+    
+    
+    #expand the reach ,, neighbors 
+    
+    #add the stages of fruits - tree, green , yellow, ripe 
+    
+    
+    
                   
                   
                   
