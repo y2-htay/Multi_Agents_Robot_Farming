@@ -105,7 +105,7 @@ class PickerRobot(Agent):
         """ 
         Pick the strawberry if one is in the current cell
         """
-        print(f"Hey I am ready to pickkkkkkkkkk fucking pickkkkkkk")
+        print(f"Hey I am ready to pickkkkkkkkkk the strawberry ")
         from model import CropAgent     #imported locally 
         crops = [ a for a in self.model.grid.get_cell_list_contents(self.pos)if isinstance (a, CropAgent)]
         if crops:
