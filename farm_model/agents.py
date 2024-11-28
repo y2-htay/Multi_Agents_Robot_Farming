@@ -3,7 +3,7 @@ from mesa import Agent
 #from .model import FREE, BUSY
 #from model import TreeAgent, CropAgent
 
-
+BATTERY_SKIP_THRESHOLD = 3
 
 #defining the constants for states
 FREE = 1  
@@ -24,6 +24,7 @@ class PickerRobot(Agent):
         self.storage = 0  #number of strawberries carred , 0 at initial stage
         self.capacity = 5   # maximum storage capacity 
         self.battery = 100    #placeholder for the battery threadhold
+        self.battery_tick = 0
         self.type = "picker_robot"
         
     
@@ -63,11 +64,26 @@ class PickerRobot(Agent):
         """ 
         Define teh behaviour of the robot at each step 
         """
+        print("battery for ", self.unique_id, " = ", self.battery)
+        
+        self.battery_tick += 1
+        
+        if self.battery_tick == BATTERY_SKIP_THRESHOLD:
+            self.battery_tick = 0
+            self.battery -= 1
+        
         print(f"PickerRobot {self.unique_id} is taking a step at position {self.pos}.")         #debug
         action = self.make_decision()
         print(f"PickerRobot {self.unique_id} decided to : {action }")     #debug print for the visual movement of pickerrobot 
         getattr(self,action)()
         
+        
+    # def advance(self) -> None:
+        
+       
+            
+    #     # if self.battery < 1:
+    #     #     return
         
         
     def make_decision(self):
@@ -76,9 +92,16 @@ class PickerRobot(Agent):
         """
         print(f"PickerRobot {self.unique_id} is making a decision.")      # debugging
         from model import CropAgent     #imported locally 
+        
+        if self.battery < 0:
+            return "wait"
+        
         if self.state == FREE:  
             #check if the robot is near the crop ( cropAgent)
-            crop_nearby = any (isinstance(a, CropAgent) for a in self.model.grid.get_neighbors(self.pos, moore = True))
+            crop_nearby = any (isinstance(a, CropAgent) for a in self.model.grid.get_neighbors(self.pos, moore = True, include_center = False, radius = 3))    ####TODO:change this useless lineeeeeee 
+            ## get the if statement  from pick  - check if that is a crop
+            
+            
             print(f"Crop Nearby: {crop_nearby}")      #debugging
             return "pick" if crop_nearby else "move_randomly"
         elif self.state == BUSY:
@@ -103,7 +126,6 @@ class PickerRobot(Agent):
             new_position = self.random.choice(valid_steps)
             self.model.grid.move_agent(self, new_position)
             print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
-            
             
             
     
@@ -146,9 +168,10 @@ class PickerRobot(Agent):
                     self.model.grid.remove_agent(agent)
                     self.model.schedule.remove(agent)
                     self.storage += 1
-                    print("successfully picked at: ", each)
+                    print("successfully picked at: ", each, "  Storage: ", self.storage)
                     continue
                 print("Not a crop")
+                
             
             # crops = [ a for a in self.model.grid.get_cell_list_contents(each)if isinstance (a, CropAgent)]
             # if crops:
