@@ -26,6 +26,31 @@ class PickerRobot(Agent):
         self.battery = 100    #placeholder for the battery threadhold
         self.type = "picker_robot"
         
+    
+    @property
+    def Reach(self) -> list:
+        #make list of positions to return
+        #take current position
+        # for ever quare that this can reach
+        # add the offset position to the list
+        positions = []
+        c_x, c_y = self.pos
+        for x in range(-3, 4):
+            for y in range (-3, 4):
+                if c_x + x < 0:
+                    continue
+                if c_x + x > self.model.grid.width:
+                    continue
+                if c_y + y < 0 :
+                    continue
+                if c_y + y > self.model.grid.height:
+                    continue
+                
+                
+                
+                positions.append((c_x + x, c_y + y))
+                
+        return positions
         
     
     
@@ -107,12 +132,30 @@ class PickerRobot(Agent):
         """
         print(f"Hey I am ready to pickkkkkkkkkk the strawberry ")
         from model import CropAgent     #imported locally 
-        crops = [ a for a in self.model.grid.get_cell_list_contents(self.pos)if isinstance (a, CropAgent)]
-        if crops:
-            crop = crops[0]
-            self.model.grid.remove_agent(crop)
-            self.storage += 1
-            print(f"Picked a strawberry at {self.pos} . Storage: {self.storage}")
+        
+        reachable = self.Reach
+        
+        print("reachable", reachable)
+        
+        for each in self.Reach:
+            print("Checking, ", each)
+            
+            for agent in self.model.grid.get_cell_list_contents(each):
+                if isinstance(agent, CropAgent):
+                    print(f"PickerRobot {self.unique_id} found a strawberry at {each}")
+                    self.model.grid.remove_agent(agent)
+                    self.model.schedule.remove(agent)
+                    self.storage += 1
+                    print("successfully picked at: ", each)
+                    continue
+                print("Not a crop")
+            
+            # crops = [ a for a in self.model.grid.get_cell_list_contents(each)if isinstance (a, CropAgent)]
+            # if crops:
+            #     crop = crops[0]
+            #     self.model.grid.remove_agent(crop)
+            #     self.storage += 1
+            #     print(f"Picked a strawberry at {each} . Storage: {self.storage}")
             
             
     

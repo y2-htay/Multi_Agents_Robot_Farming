@@ -27,6 +27,33 @@ class PickerRobot(Agent):
         self.type = "picker_robot"
         
         
+        
+    @property
+    def Reach(self) -> list:
+        #make list of positions to return
+        #take current position
+        # for ever quare that this can reach
+        # add the offset position to the list
+        positions = []
+        c_x, c_y = self.pos
+        for x in range(-3, 4):
+            for y in range (-3, 4):
+                if x < 0:
+                    continue
+                if x > self.model.grid.width:
+                    continue
+                if y < 0 :
+                    continue
+                if y > self.model.grid.height:
+                    continue
+                
+                
+                
+                positions.append((c_x + x, c_y + y))
+                
+        return positions
+            
+            
     
     
     @property 
@@ -45,22 +72,22 @@ class PickerRobot(Agent):
         
         
         
-    def make_decision(self):
-        """ 
-        Decide the next action based on the robot's state and surroundings 
-        """
-        print(f"PickerRobot {self.unique_id} is making a decision.")      # debugging
-        from model import CropAgent     #imported locally 
-        if self.state == FREE:  
-            #check if the robot is near the crop ( cropAgent)
-            crop_nearby = any (isinstance(a, CropAgent) for a in self.model.grid.get_neighbors(self.pos, moore = True))
-            print(f"Crop Nearby: {crop_nearby}")      #debugging
-            return "pick" if crop_nearby else "move_randomly"
-        elif self.state == BUSY:
-            #return to the base when it is rull
-            return "return_to_base" if self.storage >= self.capacity else "move_randomly"
-        else:
-            return "wait"   #Default action     # could it be keep moving or ?
+    # def make_decision(self):
+    #     """ 
+    #     Decide the next action based on the robot's state and surroundings 
+    #     """
+    #     print(f"PickerRobot {self.unique_id} is making a decision.")      # debugging
+    #     from model import CropAgent     #imported locally 
+    #     if self.state == FREE:  
+    #         #check if the robot is near the crop ( cropAgent)
+    #         crop_nearby = any (isinstance(a, CropAgent) for a in self.model.grid.get_neighbors(self.pos, moore = True))
+    #         print(f"Crop Nearby: {crop_nearby}")      #debugging
+    #         return "pick" if crop_nearby else "move_randomly"
+    #     elif self.state == BUSY:
+    #         #return to the base when it is rull
+    #         return "return_to_base" if self.storage >= self.capacity else "move_randomly"
+    #     else:
+    #         return "wait"   #Default action     # could it be keep moving or ?
         
         
         
@@ -106,6 +133,14 @@ class PickerRobot(Agent):
         Pick the strawberry if one is in the current cell
         """
         from model import CropAgent     #imported locally 
+        
+        # get the reach
+        # for each in reach 
+        
+        reachable = self.Reach
+        
+        print(reachable)
+        
         crops = [ a for a in self.model.grid.get_cell_list_contents(self.pos)if isinstance (a, CropAgent)]
         if crops:
             crop = crops[0]

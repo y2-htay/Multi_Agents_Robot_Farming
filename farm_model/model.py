@@ -389,7 +389,7 @@ class FarmModel(Model):
     def create_crops(self, crops_coordinates):
         for (x, y) in crops_coordinates:
             print(f"Placing CropAgent at ({x}, {y})")
-            crop_agent = CropAgent((x, y), self)
+            crop_agent = CropAgent(self.next_id() ,(x, y), self)
             self.grid.place_agent(crop_agent, (x, y))
             self.schedule.add(crop_agent)
 
@@ -434,9 +434,10 @@ class TreeAgent(Agent):
 
 
 class CropAgent(Agent):
-    def __init__(self, pos, model):
-        super().__init__(pos, model)
+    def __init__(self, _id, pos, model):
+        super().__init__(_id, model)
         self.type = "crop"
+        self.pos = pos
 
 
 class PathAgent(Agent):
