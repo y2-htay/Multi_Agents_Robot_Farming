@@ -499,10 +499,28 @@ class FarmModel(Model):
         
         
         
-        # #add picker robot
-        # for i in range (num_robots):
-        #     x = self.random.randint(0, width -1)
-        #     y = self.random.randint(0, height - 1)
+        # #add picker robot  ( locate for the initial grid ) 
+        for i in range (num_robots):
+            while True:     #continue until a valid position is found 
+                x = self.random.randint(0, width -1)
+                y = self.random.randint(0, height - 1)
+                
+                
+                
+                #check if the cell contains any tree or crop agents
+                if any (isinstance(agent, (TreeAgent, CropAgent))for agent in (x,y)):
+                    continue       #skip this cell and find a new one 
+                
+                
+                
+                #if no tree or crop agents, place the PickerRobot
+                print(f"Creating PickerRobot with id = {self.next_id()},pos ={(x,y)}, model = {self}")
+                picker_robot = PickerRobot(self.next_id(),(x,y),self)
+                self.grid.place_agent(picker_robot,(x,y))
+                self.schedule.add(picker_robot)
+                break      #exit the while loop after placing the robot 
+            
+            
             
             #While true
             
