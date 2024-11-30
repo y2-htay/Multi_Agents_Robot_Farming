@@ -329,24 +329,102 @@ class FarmModel(Model):
 
 
         # Terrain setup
+        #New Coordinates    # old one also in a loop range , but different coordinates , called in function as the same way 
         tree_ranges = [
-    ((0, 1), (0, 24)),  # Trees along the first row
-    ((2, 3), (2, 24)),  # Trees in a vertical column
-    ((4, 0), (4, 13)),  # Trees in a vertical column
-    ((4, 15), (4, 21)), # Separate section for trees
-    ((8, 6), (8, 23)),  # Trees in another column
-    ((9, 0), (9, 10)),  # Final range of trees
+    ((0, 2), (0, 3)),   # Range for trees in the first column
+    ((1, 2), (1, 6)),   # Range for trees in the second column
+    ((4, 0), (4, 13)),  # Range for trees in the fifth column
+    ((8, 2), (8, 7)),   # Range for trees in the ninth column
+    ((16, 2), (16, 18)), # Range for trees in the seventeenth column
+    ((20, 0), (20, 19)), # Range for trees in the twenty-first column
+    ((24, 2), (24, 24)), # Range for trees in the last column
+    # Add more ranges as needed
 ]
+        
+        #New Water Coordinates
+        water_ranges = [(x, y) for x in [12, 13] for y in range(23)]
+        
+        
+        #New Crops Coordinates 
+        crops_coordinates = [
+    (0, 4), (0, 5), (0, 12), (0, 13), (0, 20), (0, 23),
+    (1, 7), (1, 8), (1, 9),
+    (4, 5), (4, 6), (4, 15), (4, 16), (4, 21),
+    (8, 8), (8, 11), (8, 18), (8, 19), (8, 20),
+    (9, 3), (9, 4), (9, 15),
+    (16, 5), (16, 6), (16, 9), (16, 14), (16, 15), (16, 19), (16, 20), (16, 23),
+    (17, 2), (17, 9), (17, 12), (17, 19), (17, 20), (17, 23),
+    (20, 3), (20, 4), (20, 13), (20, 21),
+    (21, 0), (21, 7), (21, 10), (21, 13), (21, 18), (21, 19),
+    (24, 5), (24, 6), (24, 11), (24, 12), (24, 16), (24, 21), (24, 22)
+]
+        
+        
+        
+        
+        
+        ###New path Coordinates 
+#         path_coordinates = [
+#     (2, 0), (3, 0), (4, 23), (6, 0), (7, 0), (8, 0), (10, 0), (11, 0), (12, 23), (14, 0), (15, 0), (16, 0), 
+#     (18, 0), (19, 0), (20, 23), (22, 0), (23, 0), (24, 0),
+#     (2, 1), (3, 1), (4, 24), (6, 1), (7, 1), (8, 1), (10, 1), (11, 1), (12, 24), (14, 1), (15, 1), (16, 1), 
+#     (18, 1), (19, 1), (20, 24), (22, 1), (23, 1), (24, 1),
+#     ...
+#     (2, 24), (3, 24), (6, 24), (7, 24), (10, 24), (11, 24), (14, 24), (15, 24), (18, 24), (19, 24), (22, 24), (23, 24)
+# ]
+        
+        
+        #New base now with four coordinates /four cell grids 
+        base_coordinates = [
+    (0, 0), (0, 1), (1, 0), (1, 1)
+]
+        
+        
+        #Generating the coordinates in a loop rather than defining all these 
+        path_coordinates =[]
+        
+        # Example: Generate paths along specific columns or rows
+        for x in [2, 3, 6, 7, 10, 11, 14, 15, 18, 19, 22, 23]:
+          for y in range(25):  # Assuming 0-24 rows
+           path_coordinates.append((x, y))
+
+        # Adding specific points like (4, 23), (12, 23), etc.
+        path_coordinates.extend([(4, 23), (4, 24), (12, 23), (12, 24)])
+        
+
+
+        
+
+
+
+
+
+
+        
+        
+    
+    #     #old tree ranges 
+    #     tree_ranges = [
+    # ((0, 1), (0, 24)),  # Trees along the first row
+    # ((2, 3), (2, 24)),  # Trees in a vertical column
+    # ((4, 0), (4, 13)),  # Trees in a vertical column
+    # ((4, 15), (4, 21)), # Separate section for trees
+    # ((8, 6), (8, 23)),  # Trees in another column
+    # ((9, 0), (9, 10)),  # Final range of trees
+
 
 
         # Add terrain agents
-        self.create_water(start_point=(6,0), end_point=(6,24))
+       # self.create_water(start_point=(6,0), end_point=(6,24))
+        self.create_water(water_ranges)      #for new water coordinates loop 
         self.create_trees(tree_ranges)
-        self.create_crops([
-            (4,13), (4,14), (2, 8), (3, 8), (4, 8), (10,16), (10,17)
-        ])
-        self.create_path(start_point=(1, 0), end_point=(1, 24))
-        self.create_base()
+    #    # self.create_crops([
+    #         (4,13), (4,14), (2, 8), (3, 8), (4, 8), (10,16), (10,17), 
+    #     ])       # for old coordinates 
+        self.create_crops(crops_coordinates)     #for new coordinates   # created a list of coordinates separate instead of calling in the function 
+    #    self.create_path(start_point=(1, 0), end_point=(1, 24))    #old path coordinates
+        self.crate_path(path_coordinates)      #for new path coordinates;
+        self.create_base(base_coordinates)
         
         
         #add picker robot
@@ -364,19 +442,44 @@ class FarmModel(Model):
 
                 
                 
+    #old function for creating from the loop self.create_water(start_point=(6,0), end_point=(6,24))
+    # def create_water(self, start_point, end_point):
+    #     start_x, start_y = start_point
+    #     end_x, end_y = end_point
+    #     for x in range(start_x, end_x + 1):
+    #         for y in range(start_y, end_y + 1):
+    #             print(f"Placing WaterAgent at ({x}, {y})")
+    #             water_agent = WaterAgent((x, y), self)
+    #             self.grid.place_agent(water_agent, (x, y))
+    #             self.schedule.add(water_agent)
+                
+    
+    #new function for creating water for new coordinates (in a loop range)
+    # def create_water(self, water_coordinates):
+    #     for start_point, end_point in water_coordinates:
+    #         start_x, start_y = start_point
+    #         end_x, end_y = end_point 
+    #         for x in range(start_x, end_x +1):
+    #             for y in range(start_y, end_y +1):
+    #                 print (f"Placing WaterAgent at ({x}, {y})")
+    #                 water_agent = WaterAgent((x,y), self)
+    #                 self.grid.place_agent(water_agent, (x,y))
+    #                 self.schedule.add(water_agent)
+                    
+                    
+    
+    #New 
+    def create_water(self, water_coordinates):
+        for (x,y) in water_coordinates:
+            print (f"Placing WaterAgent at ({x}, {y})")
+            water_agent = WaterAgent((x,y), self)
+            self.grid.place_agent(water_agent, (x,y))
+            self.schedule.add(water_agent)
+                    
 
-    def create_water(self, start_point, end_point):
-        start_x, start_y = start_point
-        end_x, end_y = end_point
-        for x in range(start_x, end_x + 1):
-            for y in range(start_y, end_y + 1):
-                print(f"Placing WaterAgent at ({x}, {y})")
-                water_agent = WaterAgent((x, y), self)
-                self.grid.place_agent(water_agent, (x, y))
-                self.schedule.add(water_agent)
 
-    def create_trees(self, tree_ranges):
-        for start_point, end_point in tree_ranges:
+    def create_trees(self, tree_coordinates):
+        for start_point, end_point in tree_coordinates:
             start_x, start_y = start_point
             end_x, end_y = end_point
             for x in range(start_x, end_x + 1):
@@ -385,71 +488,101 @@ class FarmModel(Model):
                     tree_agent = TreeAgent((x, y), self)
                     self.grid.place_agent(tree_agent, (x, y))
                     self.schedule.add(tree_agent)
-
+    
+    
+    ## same function for crops defined in a list , 
     def create_crops(self, crops_coordinates):
         for (x, y) in crops_coordinates:
             print(f"Placing CropAgent at ({x}, {y})")
             crop_agent = CropAgent(self.next_id() ,(x, y), self)
             self.grid.place_agent(crop_agent, (x, y))
             self.schedule.add(crop_agent)
-
-    def create_path(self, start_point, end_point):
-        start_x, start_y = start_point
-        end_x, end_y = end_point
-        for x in range(start_x, end_x + 1):
-            for y in range(start_y, end_y + 1):
-                print(f"Placing PathAgent at ({x}, {y})")
-                path_agent = PathAgent((x, y), self)
-                self.grid.place_agent(path_agent, (x, y))
-                self.schedule.add(path_agent)
+            
+            
+    #old function for coordinates in a looop  self.create_path(start_point=(1, 0), end_point=(1, 24)) 
+    # def create_path(self, start_point, end_point):
+    #     start_x, start_y = start_point
+    #     end_x, end_y = end_point
+    #     for x in range(start_x, end_x + 1):
+    #         for y in range(start_y, end_y + 1):
+    #             print(f"Placing PathAgent at ({x}, {y})")
+    #             path_agent = PathAgent((x, y), self)
+    #             self.grid.place_agent(path_agent, (x, y))
+    #             self.schedule.add(path_agent)
+                
+    
+    #New function for path coordinates defined in a list path_coordinates  , and called  in function self.create_path(path_coordinates)      
+    def create_path(self, path_coordinates):
+        for (x,y) in path_coordinates:
+            print(f"Placing PathAgent at ({x}, {y})")
+            path_agent = PathAgent((x, y), self)
+            self.grid.place_agent(path_agent, (x, y))
+            self.schedule.add(path_agent)
+            
                 
                 
-                
-    def create_base(self):
-        """
-        Add base station to the grid along the column = 0 
-        """
-        base_position = (0, 0) 
-        print(f"Base position: {base_position}")
-        base_agent = BaseAgent(base_position, self)
-        self.grid.place_agent(base_agent, base_position)
-        self.schedule.add(base_agent)
+    
+    
+    # #old function for when base is only one grid at the corner    
+    # def create_base(self):
+    #     """
+    #     Add base station to the grid along the column = 0 
+    #     """
+    #     base_position = (0, 0) 
+    #     print(f"Base position: {base_position}")
+    #     base_agent = BaseAgent(base_position, self)
+    #     self.grid.place_agent(base_agent, base_position)
+    #     self.schedule.add(base_agent)
         
-    def step(self):
-        self.schedule.step()
+    # def step(self):
+    #     self.schedule.step()
+    
+
+    
+    #New function for base with 4 coordinates ,
+    def create_base(self, base_coordinates):
+        for (x, y) in base_coordinates:
+            print(f"Placing BaseAgent at ({x}, {y})")
+            base_agent = BaseAgent((x, y), self)
+            self.grid.place_agent(base_agent, (x, y))
+            self.schedule.add(base_agent)
         
         
 
 
-class WaterAgent(Agent):
-    def __init__(self, pos, model):
-        super().__init__(pos, model)
+class WaterAgent(Agent):   #an agent representing a tree on the grid 
+    def __init__(self, unique_id,  model):
+        super().__init__(unique_id, model)
         self.type = "water"
+        
 
 
 class TreeAgent(Agent):
-    def __init__(self, pos, model):
-        super().__init__(pos, model)
+    def __init__(self, unique_id,  model):
+        super().__init__(unique_id, model)
         self.type = "tree"
+        
 
 
 class CropAgent(Agent):
     def __init__(self, _id, pos, model):
-        super().__init__(_id, model)
+        super().__init__(_id, pos, model)
         self.type = "crop"
         self.pos = pos
+        #super().__init__(_id, model)
 
 
 class PathAgent(Agent):
-    def __init__(self, pos, model):
-        super().__init__(pos, model)
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
         self.type = "path"
-
+        
 
 class BaseAgent(Agent):
-    def __init__(self, pos, model):
-        super(). __init__(pos, model)
+    def __init__(self, unique_id , pos, model):
+        super(). __init__(unique_id , pos, model)
         self.type = "base"
+        
         
         
 # class PickerRobot(Agent):

@@ -3,7 +3,7 @@ from mesa import Agent
 #from .model import FREE, BUSY
 #from model import TreeAgent, CropAgent
 
-BATTERY_SKIP_THRESHOLD = 3
+BATTERY_SKIP_THRESHOLD = 5
 
 #defining the constants for states
 FREE = 1  
