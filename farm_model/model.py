@@ -102,24 +102,66 @@ class FarmModel(Model):
         #     self.schedule.add(picker_robot)
         
         
-        for i in range (num_robots):
-            max_attempts = 100
-            attempts = 0
-            while attempts < max_attempts:
-                x = self.random.randint(0, width -1)
-                y = self.random.randint(0, height -1)
-                if self.grid.is_cell_empty((x,y)):
-                    print(f"Placing Picker Robot {i} at position {(x,y)} ")
-                    picker_robot = PickerRobot(self.next_id(), (x,y), self)
-                    self.grid.place_agent(picker_robot, (x,y))
-                    self.schedule.add(picker_robot)
-                    break
-                attempts +=1
-            else:
-                print(f"Failed to place Picker Robot{i} after {max_attempts} attempts.")
+
+
+        # print("Starting to place PickerRobot agents.....")
+        # for i in range (num_robots):
+        #     print(f"Attempting to place PickerRobot {i} ....)")
+        #     max_attempts = 100
+        #     attempts = 0
+        #     while attempts < max_attempts:
+        #         x = self.random.randint(0, self.grid.width -1)
+        #         y = self.random.randint(0, self.grid.height -1)
+        #         if self.grid.is_cell_empty((x,y)):
+        #             print(f"Placing Picker Robot {i} at position {(x,y)} ")
+        #             picker_robot = PickerRobot(self.next_id(), (x,y), self)
+        #             self.grid.place_agent(picker_robot, (x,y))
+        #             self.schedule.add(picker_robot)
+        #             break
+        #         attempts +=1
+        #         print(f"Finished placing PickerRobot agents.")
+        #     else:
+        #         print(f"Failed to place Picker Robot{i} after {max_attempts} attempts.")
         
         
-        
+
+        #debug for testing placement for pickerrobots ( placing only one robot)
+        # for i in range(num_robots):
+        #     x = self.random.randint(0, width -1)
+        #     y = self.random.randint(0, height - 1)
+        #     while not self.grid.is_cell_empty((x,y)):
+        #         x = self.random.randint(0, width - 1)
+        #         y = self.random.randint(0, height -1)
+        #         print("Starting PickerRobot Placement")
+        #         picker_robot = PickerRobot (self.next_id(), (0,0), self)
+        #         self.grid.place_agent(picker_robot, (0,0))
+        #         self.schedule.add(picker_robot)
+
+
+        # testing robot placement anywhere apart from water and tree grids   ## works works works this one works 
+        for i in range(num_robots):
+            while True:
+                x = self.random.randint(0, self.grid.width - 1)
+                y = self.random.randint(0, self.grid.height - 1)
+
+                # Get contents of the cell
+                contents = self.grid.get_cell_list_contents((x, y))
+
+                # Check conditions
+                has_tree_or_water = any(isinstance(agent, (TreeAgent, WaterAgent)) for agent in contents)
+                is_valid_cell = any(isinstance(agent, (PathAgent, BaseAgent)) for agent in contents)
+
+                if not has_tree_or_water and is_valid_cell:
+                  print(f"Placing PickerRobot at ({x}, {y})")  # Debug
+                  picker_robot = PickerRobot(self.next_id(), (x, y), self)
+                  self.grid.place_agent(picker_robot, (x, y))
+                  self.schedule.add(picker_robot)
+                  break  # Exit loop after successfully placing
+                else:
+                  print(f"Invalid cell for PickerRobot at ({x}, {y}), retrying...")  # Debug
+
+
+
         
     ##debug 
     def log_cell_contents(self):
@@ -129,6 +171,8 @@ class FarmModel(Model):
                 contents = self.grid.get_cell_list_contents((x,y))
                 if contents:
                     print(f"Cell ({x},{y}) contains: {[type(agent).__name__ for agent in contents]}")
+                if any(isinstance(agent, PickerRobot) for agent in contents):
+                    print(f"PickerRobot located at ({x}, {y})")
                     
                     
     ##debug                

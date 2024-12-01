@@ -64,7 +64,7 @@ class PickerRobot(Agent):
         """ 
         Define teh behaviour of the robot at each step 
         """
-        print(f"PickerRobot {self.unique_id} is steppign at position {self.pos}.")
+        print(f"PickerRobot {self.unique_id} is stepping at position {self.pos}.")
         print("battery for ", self.unique_id, " = ", self.battery)
         
         self.battery_tick += 1
