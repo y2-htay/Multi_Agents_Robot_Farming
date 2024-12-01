@@ -33,18 +33,7 @@ def farm_portrayal(agent):
     else:
         return {"Shape": "rect", "Color": "gray", "Layer": 0, "w": 1, "h": 1}
 
-# def robot_portrayal(robot):
-#     """
-#     Portrayal for robots (PickerRobot and DroneRobot).
-#     """
-#     return {
-#         "Shape": "circle",
-#         "r": 0.7,
-#         "Layer": 2,
-#         "Color": "red" if robot.type == "picker_robot" else "purple",
-#         "x": robot.pos[0],
-#         "y": robot.pos[1],
-#     }
+
 
 def water_portrayal(water):
     """

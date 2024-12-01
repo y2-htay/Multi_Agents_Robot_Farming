@@ -28,37 +28,7 @@ class PickerRobot(Agent):
         self.type = "picker_robot"
         
 
-    # def step(self):
-    #   print(f"PickerRobot {self.unique_id} stepping at position {self.pos}.")
-    #   self.move_randomly()
-
-    
-    # @property
-    # def Reach(self) -> list:
-    #     #make list of positions to return
-    #     #take current position
-    #     # for ever quare that this can reach
-    #     # add the offset position to the list
-    #     positions = []
-    #     c_x, c_y = self.pos
-    #     for x in range(-3, 4):
-    #         for y in range (-3, 4):
-    #             if c_x + x < 0:
-    #                 continue
-    #             if c_x + x > self.model.grid.width:
-    #                 continue
-    #             if c_y + y < 0 :
-    #                 continue
-    #             if c_y + y > self.model.grid.height:
-    #                 continue
-                
-                
-                
-    #             positions.append((c_x + x, c_y + y))
-                
-    #     return positions
-    
-
+    #reach property checking positions only inside the grid. 
     @property
     def Reach(self) -> list:
         positions = []
@@ -101,22 +71,6 @@ class PickerRobot(Agent):
 
 
 
-    ###### debug , test for step , robots movement without constraints ######
-    # def step(self):
-    #     """ Test robots movement by calling move_randomly """
-    #     print(f"PickerRobot {self.unique_id} stepping at position {self.pos}.")
-    #     self.move_randomly()
-        
-    #def advance(self) -> None:
-        
-       
-            
-        # if self.battery < 1:
-        #     return
-    
-    
-    
-    ###########
     
     def make_decision(self):
         """ 
@@ -143,32 +97,7 @@ class PickerRobot(Agent):
         
        
         
-   ###################function after battery ############cuuu
-        
-    # def make_decision(self):
-    #     """ 
-    #     Decide the next action based on the robot's state and surroundings 
-    #     """
-    #     print(f"PickerRobot {self.unique_id} is making a decision.")      # debugging
-    #     from model import CropAgent     #imported locally 
-        
-    #     if self.battery < 0:
-    #         return "wait"
-        
-    #     if self.state == FREE:  
-    #         #check if the robot is near the crop ( cropAgent)
-    #         ##crop_nearby = any (isinstance(a, CropAgent) for a in self.model.grid.get_neighbors(self.pos, moore = True, include_center = False, radius = 3))    ####TODO:change this useless lineeeeeee 
-    #         crop_nearby = any(isinstance(a, CropAgent) for a in self.model.grid.get_neighbors(self.pos, moore=True, include_center = False, radius =3))
-    #         ## get the if statement  from pick  - check if that is a crop
-    #         print(f"PickerRobot {self.unique_id} Crop Nearby: {crop_nearby}")      #debugging
-    #         return "pick" if crop_nearby else "move_randomly"
-    #     elif self.state == BUSY:
-    #         #return to the base when it is rull
-    #         return "return_to_base" if self.storage >= self.capacity else "move_randomly"
-    #     else:
-    #         return "wait"   #Default action     # could it be keep moving or ?
-        
-    ######################################################
+   
     
     ##########function before battery ################
     
@@ -202,21 +131,7 @@ class PickerRobot(Agent):
             
             
     
-    #temporary function to test random movement of the robots without constrainst , no restrictions to water and  trees.
-    # def move_randomly(self):
-    #     """
-    #     Move the robot to a random neighboring cell, without any restrictions.
-    #     """
-    #     print(f" PickerRobot {self.unique_id} attempting to move.")   #debug
-    #     possible_steps = self.model.grid.get_neighborhood(
-    #         self.pos, moore = True, include_center = False 
-    #     )
-    #     if possible_steps:
-    #         new_position = self.random.choice(possible_steps)
-    #         print(f"PickerRobot {self.unique_id} moving from {self.pos} to {new_position}.")
-    #         self.model.grid.move_agent(self, new_position)
-    #     else:
-    #         print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
+    
             
             
             
@@ -246,12 +161,7 @@ class PickerRobot(Agent):
                 print("Not a crop")
                 
             
-            # crops = [ a for a in self.model.grid.get_cell_list_contents(each)if isinstance (a, CropAgent)]
-            # if crops:
-            #     crop = crops[0]
-            #     self.model.grid.remove_agent(crop)
-            #     self.storage += 1
-            #     print(f"Picked a strawberry at {each} . Storage: {self.storage}")
+           
             
             
     
