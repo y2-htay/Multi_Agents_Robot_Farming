@@ -15,6 +15,7 @@ class FarmModel(Model):
         self.grid = MultiGrid(width, height, torus=False)  # Non-toroidal grid
         self.schedule = BaseScheduler(self)  # Scheduler for agents
 
+
         
         #Terrain Setup
         tree_ranges = [
@@ -86,44 +87,21 @@ class FarmModel(Model):
         
         
         ### Debug : log the grid contents after initialisation
-        self.log_cell_contents()
+        #self.log_cell_contents()
         
-        
-        #old function that worked for old grid ( not shoiwng anything )
+        ##debug: placing robots in random grid without constraints 
         # for i in range(num_robots):
-        #     x = self.random.randint(0, width -1)
-        #     y = self.random.randint(0, height -1)
-        #     while not self.grid.is_cell_empty((x,y)):
-        #         x = self.random.randint(0, width -1)
-        #         y = self.random.randint(0, height -1)
-        #     print(f"Creating Picker Robot with id = {self.next_id()}, pos = {(x,y)}, model = {self}")
-        #     picker_robot = PickerRobot(self.next_id(),(x,y),self)
-        #     self.grid.place_agent(picker_robot,(x,y))
+        #     x = self.random.randint(0, self.grid.width -1)
+        #     y = self.random.randint(0, self.grid.height -1)
+        #     picker_robot = PickerRobot(self.next_id(), (x,y), self)
+        #     self.grid.place_agent(picker_robot, (x,y))
         #     self.schedule.add(picker_robot)
-        
-        
+        #     print(f"PickerRobot {picker_robot.unique_id} placed at ({x}, {y})")
 
 
-        # print("Starting to place PickerRobot agents.....")
-        # for i in range (num_robots):
-        #     print(f"Attempting to place PickerRobot {i} ....)")
-        #     max_attempts = 100
-        #     attempts = 0
-        #     while attempts < max_attempts:
-        #         x = self.random.randint(0, self.grid.width -1)
-        #         y = self.random.randint(0, self.grid.height -1)
-        #         if self.grid.is_cell_empty((x,y)):
-        #             print(f"Placing Picker Robot {i} at position {(x,y)} ")
-        #             picker_robot = PickerRobot(self.next_id(), (x,y), self)
-        #             self.grid.place_agent(picker_robot, (x,y))
-        #             self.schedule.add(picker_robot)
-        #             break
-        #         attempts +=1
-        #         print(f"Finished placing PickerRobot agents.")
-        #     else:
-        #         print(f"Failed to place Picker Robot{i} after {max_attempts} attempts.")
-        
-        
+   
+
+
 
         #debug for testing placement for pickerrobots ( placing only one robot)
         # for i in range(num_robots):
@@ -137,8 +115,10 @@ class FarmModel(Model):
         #         self.grid.place_agent(picker_robot, (0,0))
         #         self.schedule.add(picker_robot)
 
+        
 
-        # testing robot placement anywhere apart from water and tree grids   ## works works works this one works 
+        ## ADDING PICKER ROBOT , INITIALISATION     #difference to last one working with battery 
+        ####robot placement anywhere apart from water and tree grids   ## works works works this one works 
         for i in range(num_robots):
             while True:
                 x = self.random.randint(0, self.grid.width - 1)
@@ -161,18 +141,21 @@ class FarmModel(Model):
                   print(f"Invalid cell for PickerRobot at ({x}, {y}), retrying...")  # Debug
 
 
+    # def step(self):
+    #     print ("Advancing the model by one step")
+    #     self.schedule.step()    
 
         
-    ##debug 
-    def log_cell_contents(self):
-        """ Log the contents of each cell in the grid."""
-        for x in range(self.grid.width):
-            for y in range(self.grid.height):
-                contents = self.grid.get_cell_list_contents((x,y))
-                if contents:
-                    print(f"Cell ({x},{y}) contains: {[type(agent).__name__ for agent in contents]}")
-                if any(isinstance(agent, PickerRobot) for agent in contents):
-                    print(f"PickerRobot located at ({x}, {y})")
+    # ##debug - works
+    # def log_cell_contents(self):
+    #     """ Log the contents of each cell in the grid."""
+    #     for x in range(self.grid.width):
+    #         for y in range(self.grid.height):
+    #             contents = self.grid.get_cell_list_contents((x,y))
+    #             if contents:
+    #                 print(f"Cell ({x},{y}) contains: {[type(agent).__name__ for agent in contents]}")
+    #             if any(isinstance(agent, PickerRobot) for agent in contents):
+    #                 print(f"PickerRobot located at ({x}, {y})")
                     
                     
     ##debug                
@@ -303,7 +286,7 @@ class FarmModel(Model):
     #New 
     def create_water(self, water_coordinates):
         for (x,y) in water_coordinates:
-            print (f"Placing WaterAgent at ({x}, {y})")
+            #print (f"Placing WaterAgent at ({x}, {y})")
             water_agent = WaterAgent(self.next_id() ,(x,y), self)
             self.grid.place_agent(water_agent, (x,y))
             self.schedule.add(water_agent)
@@ -316,7 +299,7 @@ class FarmModel(Model):
             end_x, end_y = end_point
             for x in range(start_x, end_x + 1):
                 for y in range(start_y, end_y + 1):
-                    print(f"Placing TreeAgent at ({x}, {y})")
+                    #print(f"Placing TreeAgent at ({x}, {y})")
                     tree_agent = TreeAgent(self.next_id() ,(x, y), self)
                     self.grid.place_agent(tree_agent, (x, y))
                     self.schedule.add(tree_agent)
@@ -351,12 +334,12 @@ class FarmModel(Model):
             
             
             if not has_tree:
-                print(f"Skipping CropAgent at ({x},{y})")
+                #print(f"Skipping CropAgent at ({x},{y})")
                 continue      #skip this position if there is no tree
             
             
             #place the CropAgent
-            print(f"Placing CropAgent at ({x}, {y})")
+            #print(f"Placing CropAgent at ({x}, {y})")
             crop_agent = CropAgent(self.next_id(), (x,y), self)
             self.grid.place_agent(crop_agent, (x,y))
             self.schedule.add(crop_agent)
@@ -377,7 +360,7 @@ class FarmModel(Model):
     #New function for path coordinates defined in a list path_coordinates  , and called  in function self.create_path(path_coordinates)      
     def create_path(self, path_coordinates):
         for (x,y) in path_coordinates:
-            print(f"Placing PathAgent at ({x}, {y})")
+            #print(f"Placing PathAgent at ({x}, {y})")
             path_agent = PathAgent(self.next_id() ,(x, y), self)
             self.grid.place_agent(path_agent, (x, y))
             self.schedule.add(path_agent)
@@ -398,25 +381,29 @@ class FarmModel(Model):
     #     self.grid.place_agent(base_agent, base_position)
     #     self.schedule.add(base_agent)
         
-    def step(self):
-        self.schedule.step()
+    # def step(self):
+
+    #     self.schedule.step()
     
 
     
     #New function for base with 4 coordinates ,
     def create_base(self, base_coordinates):
         for (x, y) in base_coordinates:
-            print(f"Placing BaseAgent at ({x}, {y})")
+            #print(f"Placing BaseAgent at ({x}, {y})")
             base_agent = BaseAgent(self.next_id() ,(x, y), self)
             self.grid.place_agent(base_agent, (x, y))
             self.schedule.add(base_agent)
             self.pos = (x,y)
             
     
+    # def step(self):
+    #     print("Advancing the model by one steppppppppp ")
+    #     self.log_cell_contents()      #inspect the grid contents at each step ( debug )
+    #     self.schedule.step()
+    
     def step(self):
-        self.log_cell_contents()      #inspect the grid contents at each step ( debug )
         self.schedule.step()
-            
 
 class WaterAgent(Agent):   #an agent representing a tree on the grid 
     def __init__(self, _id, pos, model):
@@ -455,18 +442,20 @@ class BaseAgent(Agent):
         
         
         
-class PickerRobot(Agent):
-    def __init__(self, unique_id, pos, model):
-        super().__init__(unique_id, model)
-        self.type= "picker_robot"
-        self.pos = pos
+# class PickerRobot(Agent):
+#     def __init__(self, unique_id, pos, model):
+#         super().__init__(unique_id, model)
+#         self.type= "picker_robot"
+#         self.pos = pos
         
         
-## important !!! to get the model started 
+# important !!! to get the model started 
 def step(self):
-    """ 
-    Advance the model by one step. 
-    """
-    print("Advancing the model by one step.")    #debugging 
-    self.schedule.step()     #triggers all agents step methods 
+       """ 
+       Advance the model by one step. 
+       """
+       print("Advancing the model by one step.")    #debugging 
+       self.schedule.step()     #triggers all agents step methods 
     
+
+

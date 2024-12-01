@@ -9,7 +9,7 @@ def farm_portrayal(agent):
     if isinstance (agent, PickerRobot):
         return {
             "Shape": "circle",
-            #"Color" : "blue" if agent.is_busy else "orange", 
+            #"Color" : "white" if agent.is_busy else "orange", 
             "Color" : "white",
             "Filled" : "true",
             "Layer" : 2,

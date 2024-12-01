@@ -3,7 +3,7 @@ from mesa import Agent
 #from .model import FREE, BUSY
 #from model import TreeAgent, CropAgent
 
-BATTERY_SKIP_THRESHOLD = 5
+BATTERY_SKIP_THRESHOLD = 10
 
 #defining the constants for states
 FREE = 1  
@@ -27,37 +27,55 @@ class PickerRobot(Agent):
         self.battery_tick = 0
         self.type = "picker_robot"
         
+
+    # def step(self):
+    #   print(f"PickerRobot {self.unique_id} stepping at position {self.pos}.")
+    #   self.move_randomly()
+
     
+    # @property
+    # def Reach(self) -> list:
+    #     #make list of positions to return
+    #     #take current position
+    #     # for ever quare that this can reach
+    #     # add the offset position to the list
+    #     positions = []
+    #     c_x, c_y = self.pos
+    #     for x in range(-3, 4):
+    #         for y in range (-3, 4):
+    #             if c_x + x < 0:
+    #                 continue
+    #             if c_x + x > self.model.grid.width:
+    #                 continue
+    #             if c_y + y < 0 :
+    #                 continue
+    #             if c_y + y > self.model.grid.height:
+    #                 continue
+                
+                
+                
+    #             positions.append((c_x + x, c_y + y))
+                
+    #     return positions
+    
+
     @property
     def Reach(self) -> list:
-        #make list of positions to return
-        #take current position
-        # for ever quare that this can reach
-        # add the offset position to the list
         positions = []
-        c_x, c_y = self.pos
-        for x in range(-3, 4):
-            for y in range (-3, 4):
-                if c_x + x < 0:
-                    continue
-                if c_x + x > self.model.grid.width:
-                    continue
-                if c_y + y < 0 :
-                    continue
-                if c_y + y > self.model.grid.height:
-                    continue
-                
-                
-                
-                positions.append((c_x + x, c_y + y))
-                
+        c_x , c_y  =self.pos
+        for x in range (-3,4):
+            for y in range(-3, 4):
+                #check if the reach is accessing the positions outside of the grid , 
+                if 0 <= c_x + x < self.model.grid.width and 0<= c_y + y < self.model.grid.height:
+                    positions.append((c_x + x , c_y + y ))
         return positions
-        
+
     
     
-    # @property 
-    # def is_busy(self):
-    #     return self.state == BUSY
+    
+    @property 
+    def is_busy(self):
+        return self.state == BUSY
     
     
     def step(self):
@@ -79,14 +97,22 @@ class PickerRobot(Agent):
         action = self.make_decision()
         print(f"PickerRobot {self.unique_id} decided to : {action }")     #debug print for the visual movement of pickerrobot 
         getattr(self,action)()        #execuse the chosen action 
+
+
+
+
+    ###### debug , test for step , robots movement without constraints ######
+    # def step(self):
+    #     """ Test robots movement by calling move_randomly """
+    #     print(f"PickerRobot {self.unique_id} stepping at position {self.pos}.")
+    #     self.move_randomly()
         
-        
-    # def advance(self) -> None:
+    #def advance(self) -> None:
         
        
             
-    #     # if self.battery < 1:
-    #     #     return
+        # if self.battery < 1:
+        #     return
     
     
     
@@ -97,10 +123,10 @@ class PickerRobot(Agent):
         Decide the next action based on the robot's state and surrondings.
         """
         print(f"PickerRobot {self.unique_id} is making a decision.")
-        from farm_model import CropAgent     
+        from model import CropAgent     
         
         if self.battery <= 0 :
-            return "return_to_base"
+            return "wait"
         
         if self.state == FREE:
             #Check if there is a cropagent nearby (ignore treeagent )
@@ -112,10 +138,12 @@ class PickerRobot(Agent):
             return "pick" if crop_nearby else "move_randomly"
         elif self.state == BUSY:
             return "return_to_base" if self.storage >= self.capacity else "move_randomly"
+        else:
+            return "wait" 
         
-        return "wait"
+       
         
-   ###################function after battery ############
+   ###################function after battery ############cuuu
         
     # def make_decision(self):
     #     """ 
@@ -150,13 +178,13 @@ class PickerRobot(Agent):
         """ 
         Move the robot to a random neighboring cell, avoiding trees 
         """
-        from farm_model import TreeAgent
+        from model import TreeAgent, WaterAgent
         #from model import CropAgent
         # imported locally only before they are called / if imported globally at the top, it is circulr dependency with model.py
         possible_steps = self.model.grid.get_neighborhood(
             self.pos, moore = True, include_center=False
         )
-        valid_steps = [ step for step in possible_steps if not any(isinstance (a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))] 
+        valid_steps = [ step for step in possible_steps if not any(isinstance (a, (TreeAgent, WaterAgent)) for a in self.model.grid.get_cell_list_contents(step))] 
         # valid_steps = [
         #     step for step in possible_steps
         # #     if self.model.grid.is_cell_empty(step)   #check if the cell is empty 
@@ -174,17 +202,20 @@ class PickerRobot(Agent):
             
             
     
-    # #temporary function to test random movement of the robots without constrainst , no restrictions to water and  trees.
+    #temporary function to test random movement of the robots without constrainst , no restrictions to water and  trees.
     # def move_randomly(self):
     #     """
     #     Move the robot to a random neighboring cell, without any restrictions.
     #     """
+    #     print(f" PickerRobot {self.unique_id} attempting to move.")   #debug
     #     possible_steps = self.model.grid.get_neighborhood(
     #         self.pos, moore = True, include_center = False 
     #     )
     #     if possible_steps:
     #         new_position = self.random.choice(possible_steps)
+    #         print(f"PickerRobot {self.unique_id} moving from {self.pos} to {new_position}.")
     #         self.model.grid.move_agent(self, new_position)
+    #     else:
     #         print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
             
             
@@ -195,7 +226,7 @@ class PickerRobot(Agent):
         Pick the strawberry if one is in the current cell
         """
         print(f"Hey I am ready to pickkkkkkkkkk the strawberry ")
-        from farm_model import CropAgent     #imported locally 
+        from model import CropAgent     #imported locally 
         
         reachable = self.Reach
         
@@ -264,4 +295,5 @@ class PickerRobot(Agent):
     
     #add the stages of fruits - tree, green , yellow, ripe 
     
+
 

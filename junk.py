@@ -1,6 +1,23 @@
 ######
 ##From Model.py
 
+
+
+
+#old function that worked for old grid ( not shoiwng anything )
+        # for i in range(num_robots):
+        #     x = self.random.randint(0, width -1)
+        #     y = self.random.randint(0, height -1)
+        #     while not self.grid.is_cell_empty((x,y)):
+        #         x = self.random.randint(0, width -1)
+        #         y = self.random.randint(0, height -1)
+        #     print(f"Creating Picker Robot with id = {self.next_id()}, pos = {(x,y)}, model = {self}")
+        #     picker_robot = PickerRobot(self.next_id(),(x,y),self)
+        #     self.grid.place_agent(picker_robot,(x,y))
+        #     self.schedule.add(picker_robot)
+
+
+
 # import mesa
 # from mesa import Model, Agent
 # from mesa.space import MultiGrid
@@ -206,11 +223,6 @@
 #         # self.create_trees(tree_ranges)
              
              
-            
-        
-        
-        
-        
         
         
             
@@ -481,12 +493,11 @@
 
 
 
+ 
 
 
 
-
-
-######### Portral.py 
+######### Portral.py ##################################
 
 
 
