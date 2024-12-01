@@ -12,7 +12,7 @@ BUSY = 0
 
 class PickerRobot(Agent):
     """ 
-    Picker robot in the farm 
+    Picker robot in the farm
     """
     
     
@@ -55,15 +55,16 @@ class PickerRobot(Agent):
         
     
     
-    @property 
-    def is_busy(self):
-        return self.state == BUSY
+    # @property 
+    # def is_busy(self):
+    #     return self.state == BUSY
     
     
     def step(self):
         """ 
         Define teh behaviour of the robot at each step 
         """
+        print(f"PickerRobot {self.unique_id} is steppign at position {self.pos}.")
         print("battery for ", self.unique_id, " = ", self.battery)
         
         self.battery_tick += 1
@@ -71,11 +72,13 @@ class PickerRobot(Agent):
         if self.battery_tick == BATTERY_SKIP_THRESHOLD:
             self.battery_tick = 0
             self.battery -= 1
+            
         
-        print(f"PickerRobot {self.unique_id} is taking a step at position {self.pos}.")         #debug
+        print(f"PickerRobot {self.unique_id} is taking a step at position {self.pos}.") #debug
+        #Decision making 
         action = self.make_decision()
         print(f"PickerRobot {self.unique_id} decided to : {action }")     #debug print for the visual movement of pickerrobot 
-        getattr(self,action)()
+        getattr(self,action)()        #execuse the chosen action 
         
         
     # def advance(self) -> None:
@@ -84,46 +87,88 @@ class PickerRobot(Agent):
             
     #     # if self.battery < 1:
     #     #     return
-        
-        
+    
+    
+    
+    ###########
+    
     def make_decision(self):
         """ 
-        Decide the next action based on the robot's state and surroundings 
+        Decide the next action based on the robot's state and surrondings.
         """
-        print(f"PickerRobot {self.unique_id} is making a decision.")      # debugging
-        from model import CropAgent     #imported locally 
+        print(f"PickerRobot {self.unique_id} is making a decision.")
+        from farm_model import CropAgent     
         
-        if self.battery < 0:
-            return "wait"
+        if self.battery <= 0 :
+            return "return_to_base"
         
-        if self.state == FREE:  
-            #check if the robot is near the crop ( cropAgent)
-            crop_nearby = any (isinstance(a, CropAgent) for a in self.model.grid.get_neighbors(self.pos, moore = True, include_center = False, radius = 3))    ####TODO:change this useless lineeeeeee 
-            ## get the if statement  from pick  - check if that is a crop
-            
-            
-            print(f"Crop Nearby: {crop_nearby}")      #debugging
+        if self.state == FREE:
+            #Check if there is a cropagent nearby (ignore treeagent )
+            crop_nearby = any(
+                isinstance(agent, CropAgent)
+                for agent in self.model.grid.get_neighbors(self.pos, moore = True, include_center = False, radius = 3)
+            )
+            print(f"PickerRobot {self.unique_id} Crop Nearby: {crop_nearby}")
             return "pick" if crop_nearby else "move_randomly"
         elif self.state == BUSY:
-            #return to the base when it is rull
             return "return_to_base" if self.storage >= self.capacity else "move_randomly"
-        else:
-            return "wait"   #Default action     # could it be keep moving or ?
         
+        return "wait"
         
+   ###################function after battery ############
+        
+    # def make_decision(self):
+    #     """ 
+    #     Decide the next action based on the robot's state and surroundings 
+    #     """
+    #     print(f"PickerRobot {self.unique_id} is making a decision.")      # debugging
+    #     from model import CropAgent     #imported locally 
+        
+    #     if self.battery < 0:
+    #         return "wait"
+        
+    #     if self.state == FREE:  
+    #         #check if the robot is near the crop ( cropAgent)
+    #         ##crop_nearby = any (isinstance(a, CropAgent) for a in self.model.grid.get_neighbors(self.pos, moore = True, include_center = False, radius = 3))    ####TODO:change this useless lineeeeeee 
+    #         crop_nearby = any(isinstance(a, CropAgent) for a in self.model.grid.get_neighbors(self.pos, moore=True, include_center = False, radius =3))
+    #         ## get the if statement  from pick  - check if that is a crop
+    #         print(f"PickerRobot {self.unique_id} Crop Nearby: {crop_nearby}")      #debugging
+    #         return "pick" if crop_nearby else "move_randomly"
+    #     elif self.state == BUSY:
+    #         #return to the base when it is rull
+    #         return "return_to_base" if self.storage >= self.capacity else "move_randomly"
+    #     else:
+    #         return "wait"   #Default action     # could it be keep moving or ?
+        
+    ######################################################
+    
+    ##########function before battery ################
+    
+    
         
     def move_randomly(self):    # responbile for movign the robot 
         """ 
         Move the robot to a random neighboring cell, avoiding trees 
         """
-        from model import TreeAgent    # imported locally only before they are called / if imported globally at the top, it is circulr dependency with model.py
+        from farm_model import TreeAgent
+        #from model import CropAgent
+        # imported locally only before they are called / if imported globally at the top, it is circulr dependency with model.py
         possible_steps = self.model.grid.get_neighborhood(
             self.pos, moore = True, include_center=False
         )
-        valid_steps = [step for step in possible_steps if not any(isinstance (a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))]
+        valid_steps = [ step for step in possible_steps if not any(isinstance (a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))] 
+        # valid_steps = [
+        #     step for step in possible_steps
+        # #     if self.model.grid.is_cell_empty(step)   #check if the cell is empty 
+        # #     and not any(isinstance(a,TreeAgent) for a in self.model.grid.get_cell_list_contents(step))     #avoid trees
+        #        ##instead of checking ...... 
+        #     if not any(isinstance(a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))
+        # ]
         print(f"PickerRobot {self.unique_id} valid steps: {valid_steps}")    # debugging 
         if valid_steps:
+            #move to a randomly chosen valid step 
             new_position = self.random.choice(valid_steps)
+            print(f"PickerRobot {self.unique_id} moving from {self.pos} to {new_position}.")
             self.model.grid.move_agent(self, new_position)
             print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
             
@@ -145,15 +190,12 @@ class PickerRobot(Agent):
             
             
             
-            
-            
-            
     def pick(self):
         """ 
         Pick the strawberry if one is in the current cell
         """
         print(f"Hey I am ready to pickkkkkkkkkk the strawberry ")
-        from model import CropAgent     #imported locally 
+        from farm_model import CropAgent     #imported locally 
         
         reachable = self.Reach
         
@@ -222,183 +264,4 @@ class PickerRobot(Agent):
     
     #add the stages of fruits - tree, green , yellow, ripe 
     
-    
-    
-                  
-                  
-                  
-        
-        
-    
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# import mesa 
-
-
-
-# NUMBER_OF_CELLS = 50 
-# BUSY = 0 
-# FREE = 1 
-# UNDONE = 0 
-# DONE = 1 
-
-
-# #defining the class for robots 
-# class PickerRobot(mesa.Agent):
-#     """Represents a strawberry picker robot in the farm """ 
-#     def __init__ ( self, id, pos, model , init_state = FREE):
-#         """Initialise state attributes, including: 
-#         * current and next position of the robot 
-#         * state (FREE/ BUSY)
-#         * payload (id of any box the robot is carrying )
-#         """
-#         super().__init__(id, model)
-#         self.x, self.y = pos
-#         self.next_x, self.next_y = None, None 
-#         self.state = init_state 
-#         self.payload = None 
-        
-        
-        
-#     @property 
-#     def isBusy (self):
-#         return self.state == BUSY
-    
-    
-    
-#     def step (self):
-#         """
-#         *Obtain action as a result of deliberation 
-#         * trigger action 
-#         """
-#         action = getattr(self,self.make_decision())
-#         action ()
-        
-        
-        
-#         #Robot decision model 
-        
-        
-#     def make_decision (self):
-#         """
-#         Simple Rule-Based  architecture , should determine the action to execute based on the robot state. 
-#         """
-#         action = "wait"
-#         if self.state == FREE:
-#             next_position = (self.x + 1 , self.y )
-#             if not self.model.is_cell_empty (next_position):
-#                 action  = "pick"
-#             elif next_position [0] < NUMBER_OF_CELLS -1 :
-#                 action = "move_fw"
-                
-#         else: 
-#             if self.pos[0]-1 == 0:
-#                 action = "drop_off"
-#             else:
-#                 action = "move_bw"
-#         return action
-    
-    
-    
-#      # Robot Actions
-     
-#     def move(self):
-#         """ 
-#         Move robot to the next position 
-#         """
-        
-#         self.model.grid.move_agent(self,(self.next_x, self.next_y))
-        
-        
-    
-#     def move_payload(self):
-#         """
-#         *Obtains the box whose id is in the payload (Hint you can use the method: self.model.schedule.agents to iterate over existing agents)
-#         *Move teh payload together with the robot
-#         """
-#         box = [ a for a in self.model.schedule.agents if isinstance(a,crops) and a.unique_id == self.payload ] 
-        
-        
-#         if len(box)>0:
-#             self.model.grid.move_agent(box[0], (self.x, self.y))
-            
-            
-#     def wait(self):
-#         """
-#         Keep the same position as the current one 
-#         """
-#         self.next_x = self.x
-#         self.next_y = self.y
-        
-        
-    
-#     def move_fw(self):
-#         """
-#         Move the robot towards the boxes from left to right
-        
-#         """
-        
-#         self.next_x = self.x + 1
-#         self.next_y = self.y
-#         self.move()
-        
-        
-#     def move_bw(self):
-#         """
-#         Move the robot and teh payload towards the collection point (right to left)
-#         """
-        
-#         self.next_x = self.x - 1
-#         self.next_y = self.y 
-#         self.move()
-#         self.move_payload()
-        
-        
-        
-#     def pick(self):
-#         """ 
-#         * change robot state to busy 
-#         * find out the id of the box next to the robot
-#         * store the box id in the payload of the robot
-#         """
-        
-#         self.state = BUSY
-#         nbs = [nb for nb in self.model.grid.get_neighbors((self.x,self.y),False)]
-        
-        
-#         for i in range(len(nbs)):
-#             if isinstance(nbs[i],crops):
-#                 box = nbs[0]
-    

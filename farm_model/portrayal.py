@@ -1,56 +1,5 @@
 from model import WaterAgent, TreeAgent, CropAgent, PathAgent, BaseAgent, PickerRobot
 
-
-# def farm_portrayal(agent):
-#     """
-#     Map agents to their visual representation.
-#     """
-#     portrayal = {}
-
-#     # WaterAgent portrayal
-#     if agent.type == "WaterAgent":
-#         portrayal = {
-#             "Shape": "rect",
-    #         "Color": "blue",
-    #         "Layer": 0,
-    #         "w": 1,
-    #         "h": 1
-    #     }
-
-    # # TreeAgent portrayal
-    # elif agent.type == "tree":
-    #     portrayal = {
-    #         "Shape": "rect",
-    #         "Color": "green",
-    #         "Layer": 1,
-    #         "w": 1,
-    #         "h": 1
-    #     }
-
-    # # PathAgent portrayal
-    # elif agent.type == "path":
-    #     portrayal = {
-    #         "Shape": "rect",
-    #         "Color": "brown",
-    #         "Layer": 0,
-    #         "w": 1,
-    #         "h": 1
-    #     }
-
-    # # CropAgent portrayal
-    # elif agent.type == "crop":
-    #     portrayal = {
-    #         "Shape": "circle",
-    #         "Color": "yellow",
-    #         "Layer": 2,
-    #         "r": 0.5
-    #     }
-
-    # return portrayal
-
-
-
-
 def farm_portrayal(agent):
     """
     Determine the portrayal based on the agent's type.
@@ -60,9 +9,14 @@ def farm_portrayal(agent):
     if isinstance (agent, PickerRobot):
         return {
             "Shape": "circle",
-            "Color" : "blue" if agent.is_busy else "pink", 
+            #"Color" : "blue" if agent.is_busy else "orange", 
+            "Color" : "white",
+            "Filled" : "true",
             "Layer" : 2,
             "r" : 0.7,
+            # "x": agent.pos[0],
+            # "y": agent.pos[1],
+            
         }
     if isinstance(agent, WaterAgent):
         return water_portrayal(agent)
@@ -151,7 +105,7 @@ def path_portrayal(path):
         raise AssertionError
     return {
         "Shape": "rect",
-        "Color": " brown",
+        "Color": "brown",
         "Layer": 0,
         "w": 1,
         "h": 1,
