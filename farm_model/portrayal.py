@@ -87,7 +87,7 @@ def crop_portrayal(crop):
         "Shape": "circle",
         "Color": "yellow",
         "Layer": 1,
-        "r": 0.7,
+        "r": 0.8,
         "Filled": "true",
         #"x": crop.pos[0],
         #"y": crop.pos[1],

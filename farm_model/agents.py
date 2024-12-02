@@ -394,15 +394,16 @@ class PickerRobot(Agent):
   
 
 
-  ### TODO:  Stop pickers and robots from going to base unless they need ( storage full or  battery dies)
+  ### TODO:  
+  ## Stop pickers and robots from going to base unless they need ( storage full or  battery dies)
  
-  ## Picker stop when storage is full 
+  ## Picker stop when storage is full (Done)
 
-  ## Drone battery dies test 
+  ## Drone battery dies test (Done)
 
   ## two drones at one crop #both wait until the picker comes 
 
-  ## dynamic arrowhead for drone 
+  ## dynamic arrowhead for drone (Done)
 
 
 

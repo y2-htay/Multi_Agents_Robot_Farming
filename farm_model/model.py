@@ -35,14 +35,19 @@ class FarmModel(Model):
         tree_ranges = [
     ((0, 2), (0,24)),
     ((1,2), (1,24)),
+    ((2,2), (2,24)),   #new tree line
     ((4,0), (4,22)),
     ((5,0), (5,22)),
+    ((6,0), (6,22)),   #new tree line 
     ((8,2), (8,24)),
     ((9,2), (9,24)),
+    ((10,2), (10,24)),   # new tree line 
+    ((15,2), (15,24)),  #new tree line 
     ((16,2), (16,24)),
     ((17,2), (17,24)),
     ((20,0), (20,22)),
     ((21,0), (21,22)),
+    ((22,0), (22,22)),   # new tree line
     ((24,2), (24,24))
 ]
         
@@ -51,18 +56,23 @@ class FarmModel(Model):
         water_ranges = [(x, y) for x in [12, 13] for y in range(23)]
         
         
-        #New Crops Coordinates 
+#         #New Crops Coordinates 
+#         crops_coordinates = [
+#     (0, 4), (0, 5), (0, 12), (0, 13), (0, 20), (0, 23),
+#     (1, 7), (1, 8), (1, 9),
+#     (4, 5), (4, 6), (4, 15), (4, 16), (4, 21),
+#     (8, 8), (8, 11), (8, 18), (8, 19), (8, 20),
+#     (9, 3), (9, 4), (9, 15),
+#     (16, 5), (16, 6), (16, 9), (16, 14), (16, 15), (16, 19), (16, 20), (16, 23),
+#     (17, 2), (17, 9), (17, 12), (17, 19), (17, 20), (17, 23),
+#     (20, 3), (20, 4), (20, 13), (20, 21),
+#     (21, 0), (21, 7), (21, 10), (21, 13), (21, 18), (21, 19),
+#     (24, 5), (24, 6), (24, 11), (24, 12), (24, 16), (24, 21), (24, 22)
+# ]
+
+
         crops_coordinates = [
-    (0, 4), (0, 5), (0, 12), (0, 13), (0, 20), (0, 23),
-    (1, 7), (1, 8), (1, 9),
-    (4, 5), (4, 6), (4, 15), (4, 16), (4, 21),
-    (8, 8), (8, 11), (8, 18), (8, 19), (8, 20),
-    (9, 3), (9, 4), (9, 15),
-    (16, 5), (16, 6), (16, 9), (16, 14), (16, 15), (16, 19), (16, 20), (16, 23),
-    (17, 2), (17, 9), (17, 12), (17, 19), (17, 20), (17, 23),
-    (20, 3), (20, 4), (20, 13), (20, 21),
-    (21, 0), (21, 7), (21, 10), (21, 13), (21, 18), (21, 19),
-    (24, 5), (24, 6), (24, 11), (24, 12), (24, 16), (24, 21), (24, 22)
+             (0,4),(1,4),(2,4)  , (0,5),(1,5),(2,5), (0,8),(1,8),(2,8), (0,12),(1,12),(2,12),(0,13),(1,13),(2,13),(0,18),(1,18),(2,18),(0,20),(1,20),(2,20), (0,23),(1,23),(2,23)
 ]
                 
         
@@ -76,12 +86,12 @@ class FarmModel(Model):
         path_coordinates =[]
         
         # Example: Generate paths along specific columns or rows
-        for x in [2, 3, 6, 7, 10, 11, 14, 15, 18, 19, 22, 23]:
+        for x in [ 3, 7, 11, 14, 18, 19, 23]:
             for y in range(25):  # Assuming 0-24 rows
                 path_coordinates.append((x, y))
 
         # Adding specific points like (4, 23), (12, 23), etc.
-        path_coordinates.extend([(4, 23), (4, 24) , (5,23), (5,24), (8,0), (8,1), (9,0),(9,1), (12, 23), (12, 24),(13,23),(13,24),(16,0),(16,1),(17,0),(17,1),(20,23),(20,24),(21,23),(21,24),(24,0),(24,1)])
+        path_coordinates.extend([(2,0), (2,1),(4, 23), (4, 24) , (5,23), (5,24), (6,23), (6,24), (8,0), (8,1), (9,0),(9,1),(10,0), (10,1), (12, 23), (12, 24),(13,23),(13,24),(15,0),(15,1),(16,0),(16,1),(17,0),(17,1),(20,23),(20,24),(21,23),(21,24),(22,23),(22,24),(24,0),(24,1)])
         
 
 
@@ -125,7 +135,7 @@ class FarmModel(Model):
             
 
 
-            
+
         ### debug drone init ##
         for i in range(num_robots):
             print(f"Attempting to place DroneRobot {i}...")
@@ -182,17 +192,28 @@ class FarmModel(Model):
                     
 
 
-    def create_trees(self, tree_coordinates):
-        for start_point, end_point in tree_coordinates:
+    # def create_trees(self, tree_coordinates):
+    #     for start_point, end_point in tree_coordinates:
+    #         start_x, start_y = start_point
+    #         end_x, end_y = end_point
+    #         for x in range(start_x, end_x + 1):
+    #             for y in range(start_y, end_y + 1):
+    #                 #print(f"Placing TreeAgent at ({x}, {y})")
+    #                 tree_agent = TreeAgent(self.next_id() ,(x, y), self)
+    #                 self.grid.place_agent(tree_agent, (x, y))
+    #                 self.schedule.add(tree_agent)
+    
+     
+    #for new tree ranges
+    def create_trees(self, tree_ranges):
+        for start_point, end_point in tree_ranges:
             start_x, start_y = start_point
             end_x, end_y = end_point
             for x in range(start_x, end_x + 1):
                 for y in range(start_y, end_y + 1):
-                    #print(f"Placing TreeAgent at ({x}, {y})")
-                    tree_agent = TreeAgent(self.next_id() ,(x, y), self)
-                    self.grid.place_agent(tree_agent, (x, y))
+                    tree_agent = TreeAgent(self.next_id(), (x,y), self)
+                    self.grid.place_agent(tree_agent, (x,y))
                     self.schedule.add(tree_agent)
-    
     
     
     
