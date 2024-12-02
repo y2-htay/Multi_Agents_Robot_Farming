@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore", category  = FutureWarning)
 import mesa
 from mesa import Agent
 #from .model import FREE, BUSY
@@ -8,6 +10,46 @@ BATTERY_SKIP_THRESHOLD = 10
 #defining the constants for states
 FREE = 1  
 BUSY = 0
+
+
+############################################################
+    ##### Drones Class Initialisation
+#############################################################
+
+class DroneRobot(Agent):
+    """
+    Drone in the farm 
+    """
+
+
+    def __init__(self, unique_id, pos, model):
+        print(f"Initialising the drone robot with {unique_id}, {pos}, {model}")
+        super().__init__(unique_id, model)
+        self.pos = pos
+        self.state = FREE
+        self.battery =  100
+        self.battery_tick = 0
+        self.type =  "drone_robot"
+        #self.prev_pos = pos # Track previous position ( # for dynamic heading )
+        #self.heading = (0,0)
+
+    ## for  dynamic arrowhead ##
+    # def step(self):
+    #     # Update position and heading
+    #     self.prev_pos = self.pos
+    #     # Example movement logic (replace with your actual logic)
+    #     self.pos = (self.pos[0] + 1, self.pos[1])
+    #     self.heading = (self.pos[0] - self.prev_pos[0], self.pos[1] - self.prev_pos[1])
+
+    
+    @property 
+    def is_busy(self):
+        return self.state == BUSY
+    
+
+#############################################################
+           ### PickerRobot Class Initialisation
+#############################################################
 
 
 class PickerRobot(Agent):
@@ -26,6 +68,8 @@ class PickerRobot(Agent):
         self.battery = 100    #placeholder for the battery threadhold
         self.battery_tick = 0
         self.type = "picker_robot"
+
+        #TODO : CAPACITY CHECK 
         
 
     #reach property checking positions only inside the grid. 
@@ -39,14 +83,19 @@ class PickerRobot(Agent):
                 if 0 <= c_x + x < self.model.grid.width and 0<= c_y + y < self.model.grid.height:
                     positions.append((c_x + x , c_y + y ))
         return positions
+    
 
-    
-    
-    
     @property 
     def is_busy(self):
         return self.state == BUSY
-    
+
+
+
+
+
+#############################################################
+           ### step function 
+#############################################################
     
     def step(self):
         """ 
@@ -70,7 +119,9 @@ class PickerRobot(Agent):
 
 
 
-
+#############################################################
+           ### Make Decison Function
+#############################################################
     
     def make_decision(self):
         """ 
@@ -98,8 +149,9 @@ class PickerRobot(Agent):
        
         
    
-    
-    ##########function before battery ################
+#############################################################
+           ### Move Randomly function 
+#############################################################
     
     
         
@@ -129,12 +181,12 @@ class PickerRobot(Agent):
             self.model.grid.move_agent(self, new_position)
             print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
             
-            
+
+
+#############################################################
+           ### Pick Function for PickerRobots
+#############################################################
     
-    
-            
-            
-            
             
     def pick(self):
         """ 
@@ -159,11 +211,14 @@ class PickerRobot(Agent):
                     print("successfully picked at: ", each, "  Storage: ", self.storage)
                     continue
                 print("Not a crop")
-                
-            
+
+
+
+#############################################################
+           ### Return To Base function 
+#############################################################            
            
-            
-            
+        
     
     
     def return_to_base(self):
@@ -180,7 +235,11 @@ class PickerRobot(Agent):
         if self.model.grid.is_cell_empty(new_position):
             self.model.grid.move_agent(self, new_position)
             
-            
+
+
+#############################################################
+           ### Wait function 
+#############################################################
             
     def wait(self):
         """
@@ -190,9 +249,7 @@ class PickerRobot(Agent):
     
     
     # Djoikstra's algorithm
-    
     #station name--> tuples()
-    
     #covert the tuples into strings
     
     #store the hash in place of the station
@@ -205,5 +262,6 @@ class PickerRobot(Agent):
     
     #add the stages of fruits - tree, green , yellow, ripe 
     
+#
 
 

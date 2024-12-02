@@ -1,9 +1,16 @@
-
+import warnings
+warnings.filterwarnings("ignore", category  = FutureWarning)
 from mesa import Model, Agent
 from mesa.space import MultiGrid
 from mesa.time import BaseScheduler
 from agents import PickerRobot
+from agents import DroneRobot
 
+
+
+#############################################################
+           ### Farm Model Class Initialisation
+#############################################################
 
 
 class FarmModel(Model):
@@ -12,11 +19,18 @@ class FarmModel(Model):
         Initialize the farm model with the given width and height.
         """
         super().__init__()  # Explicitly initialize the Model class
+        print("Initialising FarmModel......")   #debug
         self.grid = MultiGrid(width, height, torus=False)  # Non-toroidal grid
         self.schedule = BaseScheduler(self)  # Scheduler for agents
 
 
-        
+
+#############################################################
+           ### Terrain Coordinates Definition 
+#############################################################
+
+
+
         #Terrain Setup
         tree_ranges = [
     ((0, 2), (0,24)),
@@ -71,6 +85,10 @@ class FarmModel(Model):
         
 
 
+#############################################################
+           ### Calling terrain functions
+#############################################################
+
 
         # Add terrain agents
        # self.create_water(start_point=(6,0), end_point=(6,24))
@@ -85,7 +103,38 @@ class FarmModel(Model):
         self.create_base(base_coordinates)
         
     
-        
+
+#############################################################
+           ### ROBOTS initialisation
+#############################################################
+
+        # # ADDING DRONES , 
+        # for i in range ( num_robots):
+        #     print(f"Attempting to place DroneRobot {i}...")    #debug
+        #     from agents import DroneRobot   
+        #     x = self.random.randint(0, self.grid.width -1)
+        #     y = self.random.randint(0, self.grid.height -1)
+        #     while not self.grid.is_cell_empty((x,y)):
+        #         x = self.random.randint(0, self.grid.width -1)
+        #         y = self.random.randint(0, self.grid.height -1)
+        #     print(f"Placing DroneRobot {i} at {(x, y)}")  # Debug print
+        #     drone_robot = DroneRobot( self.next_id(), (x,y), self)
+        #     print(f"Placing DroneRobot at {x}, {y}")
+        #     self.grid.place_agent(drone_robot, (x,y))
+        #     self.schedule.add(drone_robot)
+            
+        ### debug drone init ##
+        for i in range(num_robots):
+            print(f"Attempting to place DroneRobot {i}...")
+            x = self.random.randint(0, self.grid.width - 1)
+            y = self.random.randint(0, self.grid.height - 1)
+            drone_robot = DroneRobot(self.next_id(), (x, y), self)
+            self.grid.place_agent(drone_robot, (x, y))
+            self.schedule.add(drone_robot)
+            print(f"DroneRobot {i} placed at {(x, y)}.")
+
+
+
 
         ## ADDING PICKER ROBOT , INITIALISATION     #difference to last one working with battery 
         ####robot placement anywhere apart from water and tree grids   ## works works works this one works 
@@ -109,7 +158,10 @@ class FarmModel(Model):
                   break  # Exit loop after successfully placing
                 else:
                   print(f"Invalid cell for PickerRobot at ({x}, {y}), retrying...")  # Debug
- 
+
+
+        
+
         
             
 
@@ -161,8 +213,6 @@ class FarmModel(Model):
             self.schedule.add(crop_agent)
             
             
-   
-                
     
     #New function for path coordinates defined in a list path_coordinates  , and called  in function self.create_path(path_coordinates)      
     def create_path(self, path_coordinates):
@@ -190,6 +240,14 @@ class FarmModel(Model):
     
     def step(self):
         self.schedule.step()
+
+
+
+
+#############################################################
+           ### Classes for terrains 
+#############################################################
+
 
 class WaterAgent(Agent):   #an agent representing a tree on the grid 
     def __init__(self, _id, pos, model):
@@ -233,7 +291,14 @@ class BaseAgent(Agent):
 #         super().__init__(unique_id, model)
 #         self.type= "picker_robot"
 #         self.pos = pos
-        
+
+
+
+
+#############################################################
+           ### MODEL SIMULATION
+#############################################################
+
         
 # important !!! to get the model started 
 def step(self):
@@ -245,3 +310,9 @@ def step(self):
     
 
 
+### Debug GUI Test ######
+
+model = FarmModel(width=25, height=25, num_robots=2)
+for i in range(10):
+    print(f"Step {i}")
+    model.step()

@@ -8,21 +8,6 @@
 ################################################################################################################################################################################################
 
 
-# #old function for when base is only one grid at the corner    
-    # def create_base(self):
-    #     """
-    #     Add base station to the grid along the column = 0 
-    #     """
-    #     base_position = (0, 0) 
-    #     print(f"Base position: {base_position}")
-    #     base_agent = BaseAgent(base_position, self)
-    #     self.grid.place_agent(base_agent, base_position)
-    #     self.schedule.add(base_agent)
-        
-    # def step(self):
-
-    #     self.schedule.step()
-    
 
 
 
@@ -703,6 +688,72 @@
 ############ Server.py##############
 
 
+
+
+### debugging server ######
+# from mesa import Model
+# from mesa.visualization.ModularVisualization import ModularServer
+# from mesa.visualization.modules import CanvasGrid
+# from mesa.space import MultiGrid
+# from mesa.time import BaseScheduler
+# from mesa import Agent
+
+# class MinimalAgent(Agent):
+#     def __init__(self, unique_id, model):
+#         super().__init__(unique_id, model)
+
+# class MinimalModel(Model):
+#     def __init__(self):
+#         self.grid = MultiGrid(10, 10, False)
+#         self.schedule = BaseScheduler(self)
+#         agent = MinimalAgent(1, self)
+#         self.grid.place_agent(agent, (5, 5))
+
+# def minimal_portrayal(agent):
+#     return {"Shape": "circle", "Color": "blue", "r": 0.5, "Layer": 1}
+
+# grid = CanvasGrid(minimal_portrayal, 10, 10, 500, 500)
+# server = ModularServer(MinimalModel, [grid], "Minimal Model", {})
+# server.port = 8524
+# server.launch()
+
+
+
+
+# ## debug - standalone grid test 
+
+# from mesa import Model
+# from mesa.visualization.ModularVisualization import ModularServer
+# from mesa.visualization.modules import CanvasGrid
+# from mesa.space import MultiGrid
+# from mesa.time import BaseScheduler
+# from mesa import Agent
+
+# class MinimalAgent(Agent):
+#     def __init__(self, unique_id, model):
+#         super().__init__(unique_id, model)
+
+# class MinimalModel(Model):
+#     def __init__(self):
+#         self.grid = MultiGrid(10, 10, False)
+#         self.schedule = BaseScheduler(self)
+#         agent = MinimalAgent(1, self)
+#         self.grid.place_agent(agent, (5, 5))
+
+# def minimal_portrayal(agent):
+#     return {"Shape": "circle", "Color": "blue", "r": 0.5, "Layer": 1}
+
+# grid = CanvasGrid(minimal_portrayal, 10, 10, 500, 500)
+# server = ModularServer(MinimalModel, [grid], "Minimal Model", {})
+# server.port = 8524
+# server.launch()
+
+
+
+
+
+
+
 # from mesa.visualization.ModularVisualization import ModularServer
 # from mesa.visualization.modules import CanvasGrid, ChartModule
 # from model import FarmModel  # Import your FarmModel class
@@ -1133,3 +1184,76 @@
 #             if isinstance(nbs[i],crops):
 #                 box = nbs[0]
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################################################################################################################################
+
+
+################################# from agents ######################################################
+
+
+
+################################################################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+# ## checking the server with minimal agent , for debug  --> if this works the issue is in FarmModel.
+# from mesa import Model
+# from mesa.visualization.ModularVisualization import ModularServer
+# from mesa.visualization.modules import CanvasGrid
+# from mesa.space import MultiGrid
+# from mesa.time import BaseScheduler
+# from mesa import Agent
+
+# # Minimal Agent
+# class MinimalAgent(Agent):
+#     def __init__(self, unique_id, model):
+#         super().__init__(unique_id, model)
+
+# # Minimal Model
+# class MinimalModel(Model):
+#     def __init__(self):
+#         self.grid = MultiGrid(10, 10, False)
+#         self.schedule = BaseScheduler(self)
+
+# # Minimal portrayal function
+# def minimal_portrayal(agent):
+#     return {"Shape": "circle", "Color": "blue", "r": 0.5, "Layer": 1}
+
+# # Set up server
+# grid = CanvasGrid(minimal_portrayal, 10, 10, 500, 500)
+# server = ModularServer(MinimalModel, [grid], "Minimal Model", {})
+# server.port = 8524
+# server.launch()
+
+
+# ##Debug -- to test the server without visualisation , 
+# from model import FarmModel
+
+# if __name__ == "__main__":
+#     model = FarmModel(width=25, height=25, num_robots=2)
+#     print("Running model...")
+#     for i in range(10):
+#         print(f"Step {i}")
+#         model.step()
