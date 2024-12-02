@@ -26,14 +26,14 @@ class DroneRobot(Agent):
         print(f"Initialising the drone robot with {unique_id}, {pos}, {model}")
         super().__init__(unique_id, model)
         self.pos = pos
-        self.state = FREE
+        self.state = "idle"      ## "idle" or "searching"
         self.battery =  100
         self.battery_tick = 0
         self.type =  "drone_robot"
-        #self.prev_pos = pos # Track previous position ( # for dynamic heading )
-        #self.heading = (0,0)
+    #     self.prev_pos = pos # Track previous position ( # for dynamic heading )
+    #     self.heading = (0,0)
 
-    ## for  dynamic arrowhead ##
+    # # for  dynamic arrowhead ##
     # def step(self):
     #     # Update position and heading
     #     self.prev_pos = self.pos
@@ -46,6 +46,114 @@ class DroneRobot(Agent):
     def is_busy(self):
         return self.state == BUSY
     
+        #####################################
+           ### Move Randomly function (Drones)
+        ######################################
+    
+    def move_randomly(self):
+        """
+        Move the drone to a random neighboring cell, ignoring all terrain constraint restrictions 
+        """
+        possible_steps = self.model.grid.get_neighborhood(
+            self.pos , moore = True, include_center = False
+        )
+        new_position = self.random.choice (possible_steps)
+        print (f"DroneRobot {self.unique_id} moving from {self.pos} to {new_position} .")
+        self.model.grid.move_agent(self, new_position)
+
+
+
+
+        ######################################
+           ### Check for Crops function (Drones)
+        ######################################
+
+
+    def check_for_crop(self):
+        """
+        Check if the current cell contains a CropAgent (strawberries ) 
+        """
+        from model import CropAgent    #avoid cicular import 
+        for agent in self.model.grid.get_cell_list_contents(self.pos):
+            if isinstance(agent, CropAgent):
+                print(f"DroneRobot {self.unique_id} found a crop at {self.pos}")
+                return True
+        return False
+    
+
+
+        ######################################
+           ### Step Function (Drones)
+        ######################################
+
+    def step(self):
+        """ 
+        Define the action of drones at each step 
+        """
+        print(f"DroneRobot {self.unique_id} at position {self.pos} with battery {self.battery}")
+
+
+        ##Decrease battery 
+        self.battery_tick += 1
+
+        if self.battery_tick >= 10:  ## can adjust the threshold here , or use the same one as picker at the top
+            self.battery_tick =  0
+            self.battery -= 1 
+
+
+        #stop if battery is run out 
+        if self.battery <= 0:
+            print (f"Drone {self.unique_id} has run out of battery and is stopping at {self.pos}.")
+            return 
+        
+
+
+        #check for crops
+        if self.check_for_crop():
+            print(f"DroneRobot {self.unique_id} is reporting a crop at {self.pos}.")
+            #pause for a moment (simulate reporting a crop)
+            return 
+        
+
+        #move randomly if no crop is found 
+        self.move_randomly()
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #############################################################
            ### PickerRobot Class Initialisation
