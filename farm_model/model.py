@@ -123,6 +123,9 @@ class FarmModel(Model):
         #     self.grid.place_agent(drone_robot, (x,y))
         #     self.schedule.add(drone_robot)
             
+
+
+            
         ### debug drone init ##
         for i in range(num_robots):
             print(f"Attempting to place DroneRobot {i}...")

@@ -30,16 +30,51 @@ class DroneRobot(Agent):
         self.battery =  100
         self.battery_tick = 0
         self.type =  "drone_robot"
-    #     self.prev_pos = pos # Track previous position ( # for dynamic heading )
-    #     self.heading = (0,0)
+        #for dynamic arrow 
+        self.prev_pos = pos # Track previous position ( # for dynamic heading )
+        self.heading = (0,0)
 
     # # for  dynamic arrowhead ##
-    # def step(self):
+    # def arrow_step(self):
     #     # Update position and heading
     #     self.prev_pos = self.pos
     #     # Example movement logic (replace with your actual logic)
     #     self.pos = (self.pos[0] + 1, self.pos[1])
     #     self.heading = (self.pos[0] - self.prev_pos[0], self.pos[1] - self.prev_pos[1])
+
+
+    # Dynamic Arrowhead (new )
+    def arrow_step(self):
+        """update position and heading dynamically for the arrow"""
+        #from mesa.space import MultiGrid     #ensuring grid handling works correctly
+
+        #store previous position
+        self.prev_pos = self.pos
+
+        #movement logic 
+        possible_steps = self.model.grid.get_neighborhood(
+            self.pos, moore = True, include_center = False
+        )
+
+        if possible_steps:
+            new_position = self.random.choice(possible_steps)
+            self.model.grid.move_agent(self, new_position)     
+
+
+        # #calculate heading based on movement 
+        # self.heading = (self.pos[0] - self.prev_pos[0], self.pos[1] - self.prev_pos[1])
+
+        #calculate heading based on movement 
+        if self.pos !=self.prev_pos:      #if the drone moved
+            self.heading = (self.pos[0] - self.prev_pos[0], self.pos[1] - self.prev_pos[1])
+        else:    #default heading if no movement occurred 
+            self.heading = (0,1) 
+
+         # Debugging
+        print(f"Drone {self.unique_id}: Prev Pos = {self.prev_pos}, Current Pos = {self.pos}, Heading = {self.heading}")
+
+
+
 
     
     @property 
@@ -96,7 +131,7 @@ class DroneRobot(Agent):
         ##Decrease battery 
         self.battery_tick += 1
 
-        if self.battery_tick >= 1:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
+        if self.battery_tick >= 5:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
             self.battery_tick =  0
             self.battery -= 1 
 
@@ -118,6 +153,10 @@ class DroneRobot(Agent):
 
         #move randomly if no crop is found 
         self.move_randomly()
+
+
+        #update position and heading dynamically (optional for dynamic arrowhead)
+        self.arrow_step()
 
 
 
@@ -151,7 +190,7 @@ class PickerRobot(Agent):
         self.pos = pos
         self.state = FREE  #FREE as default
         self.storage = 0  #number of strawberries carred , 0 at initial stage
-        self.capacity = 10  # maximum storage capacity 
+        self.capacity = 20  # maximum storage capacity 
         self.battery = 100    #placeholder for the battery threadhold
         self.battery_tick = 0
         self.type = "picker_robot"
@@ -224,7 +263,7 @@ class PickerRobot(Agent):
             return "wait"
         
         # new added for capacity storage check 
-        if self.storage >= 10:     #for inidvidual or both ?
+        if self.storage >= 20:     #for inidvidual or both ?
             return "wait" 
         
         if self.state == FREE:
@@ -366,6 +405,13 @@ class PickerRobot(Agent):
   ## dynamic arrowhead for drone 
 
 
+
+
+
+
+
+
+
   ## TODO: Optional 
 
   ## stages of fruit - no crop, green , yellow , ripe 
@@ -376,4 +422,6 @@ class PickerRobot(Agent):
 
   ## make_decision needed in drones ? 
 
-  # so battery is not based on individual move, its just all about step?
+  ## so battery is not based on individual move, its just all about step?
+
+  ## strawberry regrowth 
