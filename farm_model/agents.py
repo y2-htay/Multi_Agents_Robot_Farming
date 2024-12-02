@@ -5,11 +5,11 @@ from mesa import Agent
 #from .model import FREE, BUSY
 #from model import TreeAgent, CropAgent
 
-BATTERY_SKIP_THRESHOLD = 10
+BATTERY_SKIP_THRESHOLD = 10   # picker
 
 #defining the constants for states
-FREE = 1  
-BUSY = 0
+FREE = 1         #picker
+BUSY = 0         #picker
 
 
 ############################################################
@@ -96,7 +96,7 @@ class DroneRobot(Agent):
         ##Decrease battery 
         self.battery_tick += 1
 
-        if self.battery_tick >= 10:  ## can adjust the threshold here , or use the same one as picker at the top
+        if self.battery_tick >= 1:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
             self.battery_tick =  0
             self.battery -= 1 
 
@@ -114,6 +114,7 @@ class DroneRobot(Agent):
             #pause for a moment (simulate reporting a crop)
             return 
         
+        ####   TODO : two drones at one crop ? 
 
         #move randomly if no crop is found 
         self.move_randomly()
@@ -121,28 +122,6 @@ class DroneRobot(Agent):
 
 
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -172,7 +151,7 @@ class PickerRobot(Agent):
         self.pos = pos
         self.state = FREE  #FREE as default
         self.storage = 0  #number of strawberries carred , 0 at initial stage
-        self.capacity = 5   # maximum storage capacity 
+        self.capacity = 10  # maximum storage capacity 
         self.battery = 100    #placeholder for the battery threadhold
         self.battery_tick = 0
         self.type = "picker_robot"
@@ -207,11 +186,14 @@ class PickerRobot(Agent):
     
     def step(self):
         """ 
-        Define teh behaviour of the robot at each step 
+        Define the behaviour of the robot at each step 
         """
         print(f"PickerRobot {self.unique_id} is stepping at position {self.pos}.")
         print("battery for ", self.unique_id, " = ", self.battery)
+        print("Storage for", self.unique_id, "=", self.storage)
+
         
+        #decrease battery level every few ticks 
         self.battery_tick += 1
         
         if self.battery_tick == BATTERY_SKIP_THRESHOLD:
@@ -240,6 +222,10 @@ class PickerRobot(Agent):
         
         if self.battery <= 0 :
             return "wait"
+        
+        # new added for capacity storage check 
+        if self.storage >= 10:     #for inidvidual or both ?
+            return "wait" 
         
         if self.state == FREE:
             #Check if there is a cropagent nearby (ignore treeagent )
@@ -356,20 +342,38 @@ class PickerRobot(Agent):
         pass
     
     
+    ### TODO:  Robots making a way back to base in a pattern 
     # Djoikstra's algorithm
     #station name--> tuples()
     #covert the tuples into strings
-    
     #store the hash in place of the station
-    
     #when making the hash, also save the
+   
     
+   
     
-    
-    #expand the reach ,, neighbors 
-    
-    #add the stages of fruits - tree, green , yellow, ripe 
-    
-#
+  
 
 
+  ### TODO:  Stop pickers and robots from going to base unless they need ( storage full or  battery dies)
+ 
+  ## Picker stop when storage is full 
+
+  ## Drone battery dies test 
+
+  ## two drones at one crop #both wait until the picker comes 
+
+  ## dynamic arrowhead for drone 
+
+
+  ## TODO: Optional 
+
+  ## stages of fruit - no crop, green , yellow , ripe 
+
+  ## check network 
+
+  ## expand the reach ,, neighbors 
+
+  ## make_decision needed in drones ? 
+
+  # so battery is not based on individual move, its just all about step?
