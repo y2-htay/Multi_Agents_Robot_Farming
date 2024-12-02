@@ -131,7 +131,7 @@ class DroneRobot(Agent):
         ##Decrease battery 
         self.battery_tick += 1
 
-        if self.battery_tick >= 5:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
+        if self.battery_tick >= 10:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
             self.battery_tick =  0
             self.battery -= 1 
 
@@ -263,7 +263,7 @@ class PickerRobot(Agent):
             return "wait"
         
         # new added for capacity storage check 
-        if self.storage >= 20:     #for inidvidual or both ?
+        if self.storage >= 100:     #for inidvidual or both ?
             return "wait" 
         
         if self.state == FREE:
