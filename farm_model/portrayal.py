@@ -85,7 +85,7 @@ def crop_portrayal(crop):
         raise AssertionError
     return {
         "Shape": "circle",
-        "Color": "yellow",
+        "Color": "pink",
         "Layer": 1,
         "r": 0.8,
         "Filled": "true",

@@ -12,7 +12,7 @@ from portrayal import farm_portrayal
 
 # Set up the grid visualization
 print("Setting up CanvasGrid....")      # debug
-canvas_element = CanvasGrid(farm_portrayal, 25, 25, 600, 600)
+canvas_element = CanvasGrid(farm_portrayal, 29, 25, 609, 600)
 
 
 print(f"Initialising the ModularServer....")  #debug
@@ -21,7 +21,7 @@ server = ModularServer(
     FarmModel,  # Model class
     [canvas_element],  # Visualization elements
     "Farm Simulation",  # Title of the simulation
-    {"width": 25, "height": 25, "num_robots": 2}  # Model parameters
+    {"width": 29, "height": 25, "num_robots": 2}  # Model parameters
 )
 
 #debug
