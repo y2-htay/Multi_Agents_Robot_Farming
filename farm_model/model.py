@@ -143,41 +143,82 @@ class FarmModel(Model):
 
 
 
-        ### debug drone init ##
+        # ### debug drone init ##
+        # for i in range(num_robots):
+        #     print(f"Attempting to place DroneRobot {i}...")
+        #     x = self.random.randint(0, self.grid.width - 1)
+        #     y = self.random.randint(0, self.grid.height - 1)
+        #     drone_robot = DroneRobot(self.next_id(), (x, y), self)
+        #     self.grid.place_agent(drone_robot, (x, y))
+        #     self.schedule.add(drone_robot)
+        #     print(f"DroneRobot {i} placed at {(x, y)}.")
+
+
+        #Placing Drones at base
         for i in range(num_robots):
-            print(f"Attempting to place DroneRobot {i}...")
-            x = self.random.randint(0, self.grid.width - 1)
-            y = self.random.randint(0, self.grid.height - 1)
-            drone_robot = DroneRobot(self.next_id(), (x, y), self)
-            self.grid.place_agent(drone_robot, (x, y))
+            if not base_coordinates:
+                print("No more available base cells for PickerRobots")
+                break
+
+            #Randomly select a base cell 
+            x, y = self.random.choice(base_coordinates)
+
+            print(f"Placing Drones at base Cell ({x}, {y})")    # debug
+            drone_robot = DroneRobot(self.next_id(), (x,y), self)
+            self.grid.place_agent(drone_robot, (x,y))
             self.schedule.add(drone_robot)
-            print(f"DroneRobot {i} placed at {(x, y)}.")
+
+
+            #remove selected coordinates to prevent duplicate placement 
+            base_coordinates.remove((x,y))
 
 
 
 
-        ## ADDING PICKER ROBOT , INITIALISATION     #difference to last one working with battery 
+        ## ADDING PICKER ROBOT , INITIALISATION  
+        ## Placing pickers ranomly -- for basic operation    #difference to last one working with battery 
         ####robot placement anywhere apart from water and tree grids   ## works works works this one works 
+        # for i in range(num_robots):
+        #     while True:
+        #         x = self.random.randint(0, self.grid.width - 1)
+        #         y = self.random.randint(0, self.grid.height - 1)
+
+        #         # Get contents of the cell
+        #         contents = self.grid.get_cell_list_contents((x, y))
+
+        #         # Check conditions
+        #         has_tree_or_water = any(isinstance(agent, (TreeAgent, WaterAgent)) for agent in contents)
+        #         is_valid_cell = any(isinstance(agent, (PathAgent, BaseAgent)) for agent in contents)
+
+        #         if not has_tree_or_water and is_valid_cell:
+        #           print(f"Placing PickerRobot at ({x}, {y})")  # Debug
+        #           picker_robot = PickerRobot(self.next_id(), (x, y), self)
+        #           self.grid.place_agent(picker_robot, (x, y))
+        #           self.schedule.add(picker_robot)
+        #           break  # Exit loop after successfully placing
+        #         else:
+        #           print(f"Invalid cell for PickerRobot at ({x}, {y}), retrying...")  # Debug
+
+
+        ## placing pickers at base 
         for i in range(num_robots):
-            while True:
-                x = self.random.randint(0, self.grid.width - 1)
-                y = self.random.randint(0, self.grid.height - 1)
+            if not base_coordinates:
+                print("No more available base cells for PickerRobots")
+                break
 
-                # Get contents of the cell
-                contents = self.grid.get_cell_list_contents((x, y))
+            #Randomly select a base cell 
+            x, y = self.random.choice(base_coordinates)
 
-                # Check conditions
-                has_tree_or_water = any(isinstance(agent, (TreeAgent, WaterAgent)) for agent in contents)
-                is_valid_cell = any(isinstance(agent, (PathAgent, BaseAgent)) for agent in contents)
+            print(f"Placing PickerRobot at base Cell ({x}, {y})")    # debug
+            picker_robot = PickerRobot(self.next_id(), (x,y), self)
+            self.grid.place_agent(picker_robot, (x,y))
+            self.schedule.add(picker_robot)
 
-                if not has_tree_or_water and is_valid_cell:
-                  print(f"Placing PickerRobot at ({x}, {y})")  # Debug
-                  picker_robot = PickerRobot(self.next_id(), (x, y), self)
-                  self.grid.place_agent(picker_robot, (x, y))
-                  self.schedule.add(picker_robot)
-                  break  # Exit loop after successfully placing
-                else:
-                  print(f"Invalid cell for PickerRobot at ({x}, {y}), retrying...")  # Debug
+
+            #remove selected coordinates to prevent duplicate placement 
+            base_coordinates.remove((x,y))
+
+
 
 
         
