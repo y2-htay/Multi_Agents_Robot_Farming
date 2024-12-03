@@ -48,28 +48,18 @@ class DroneRobot(Agent):
         """update position and heading dynamically for the arrow"""
         #from mesa.space import MultiGrid     #ensuring grid handling works correctly
 
-        #store previous position
-        self.prev_pos = self.pos
 
-        #movement logic 
-        possible_steps = self.model.grid.get_neighborhood(
-            self.pos, moore = True, include_center = False
-        )
-
-        if possible_steps:
-            new_position = self.random.choice(possible_steps)
-            self.model.grid.move_agent(self, new_position)     
-
-
-        # #calculate heading based on movement 
-        # self.heading = (self.pos[0] - self.prev_pos[0], self.pos[1] - self.prev_pos[1])
-
-        #calculate heading based on movement 
-        if self.pos !=self.prev_pos:      #if the drone moved
-            self.heading = (self.pos[0] - self.prev_pos[0], self.pos[1] - self.prev_pos[1])
-        else:    #default heading if no movement occurred 
-            self.heading = (0,1) 
-
+        p_x, p_y = self.prev_pos
+        c_x, c_y = self.pos
+        
+        if (p_x < c_x):
+            self.heading = (1,0)
+        elif (p_x > c_x):
+            self.heading = (-1,0)
+        elif (p_y < c_y):
+            self.heading = (0,1)
+        elif (p_y > c_y):
+            self.heading = (0,-1)
          # Debugging
         print(f"Drone {self.unique_id}: Prev Pos = {self.prev_pos}, Current Pos = {self.pos}, Heading = {self.heading}")
 
@@ -90,10 +80,11 @@ class DroneRobot(Agent):
         Move the drone to a random neighboring cell, ignoring all terrain constraint restrictions 
         """
         possible_steps = self.model.grid.get_neighborhood(
-            self.pos , moore = True, include_center = False
+            self.pos , moore = False, include_center = False, radius=1
         )
         new_position = self.random.choice (possible_steps)
         print (f"DroneRobot {self.unique_id} moving from {self.pos} to {new_position} .")
+        self.prev_pos = self.pos
         self.model.grid.move_agent(self, new_position)
 
 
