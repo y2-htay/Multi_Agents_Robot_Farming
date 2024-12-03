@@ -7,7 +7,7 @@ def farm_portrayal(agent):
     """
     Determine the portrayal based on the agent's type.
     """
-    print(f"Portraying agent: {agent} at position {getattr(agent, 'pos', None)}")  #debug
+    #print(f"Portraying agent: {agent} at position {getattr(agent, 'pos', None)}")  #debug
     # if isinstance(agent, PickerRobot) or isinstance(agent, DroneRobot):
     #     return robot_portrayal(agent)
     if isinstance (agent, PickerRobot):

@@ -5,7 +5,7 @@ from mesa import Agent
 #from .model import FREE, BUSY
 #from model import TreeAgent, CropAgent
 
-BATTERY_SKIP_THRESHOLD = 10   # picker
+BATTERY_SKIP_THRESHOLD = 100   # picker - change thereadshold 
 
 #defining the constants for states
 FREE = 1         #picker
@@ -122,7 +122,7 @@ class DroneRobot(Agent):
         ##Decrease battery 
         self.battery_tick += 1
 
-        if self.battery_tick >= 10:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
+        if self.battery_tick >= 150:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
             self.battery_tick =  0
             self.battery -= 1 
 
@@ -181,7 +181,7 @@ class PickerRobot(Agent):
         self.pos = pos
         self.state = FREE  #FREE as default
         self.storage = 0  #number of strawberries carred , 0 at initial stage
-        self.capacity = 20  # maximum storage capacity 
+        self.capacity = 1000  # maximum storage capacity 
         self.battery = 100    #placeholder for the battery threadhold
         self.battery_tick = 0
         self.type = "picker_robot"
@@ -211,7 +211,7 @@ class PickerRobot(Agent):
 
 
 #############################################################
-           ### step function 
+           ### step function (picker )
 #############################################################
     
     def step(self):
@@ -240,7 +240,7 @@ class PickerRobot(Agent):
 
 
 #############################################################
-           ### Make Decison Function
+           ### Make Decison Function(picker)
 #############################################################
     
     def make_decision(self):
@@ -250,13 +250,16 @@ class PickerRobot(Agent):
         print(f"PickerRobot {self.unique_id} is making a decision.")
         from model import CropAgent     
         
-        if self.battery <= 0 :
+        if self.battery == 0 :
+            print(f"Picker battery died.")
             return "wait"
         
-        # new added for capacity storage check 
-        if self.storage >= 100:     #for inidvidual or both ?
-            return "wait" 
         
+        # new added for capacity storage check 
+        if self.storage >= 1000:     #for inidvidual or both ?
+            print(f"Storage Full for PickerRobot")
+            return "wait" 
+            
         if self.state == FREE:
             #Check if there is a cropagent nearby (ignore treeagent )
             crop_nearby = any(
@@ -274,18 +277,26 @@ class PickerRobot(Agent):
         
    
 #############################################################
-           ### Move Randomly function 
+           ### Move Randomly function (picker)
 #############################################################
     
     
         
     def move_randomly(self):    # responbile for movign the robot 
         """ 
-        Move the robot to a random neighboring cell, avoiding trees 
+        Move the robot to a random neighboring cell, avoiding trees , Reduce speed when moving through water
         """
-        from model import TreeAgent
+        from model import TreeAgent, WaterAgent
         #from model import CropAgent
         # imported locally only before they are called / if imported globally at the top, it is circulr dependency with model.py
+
+        # slowing down for moving through water
+        if hasattr(self, 'slowdown_counter') and self.slowdown_counter > 0 :
+            print(f"PickerRobot {self.unique_id} is slowing down near the water")
+            self.slowdown_counter -= 1 
+            return   # skip  this step 
+
+
         possible_steps = self.model.grid.get_neighborhood(
             self.pos, moore = True, include_center=False
         )
@@ -302,6 +313,12 @@ class PickerRobot(Agent):
             #move to a randomly chosen valid step 
             new_position = self.random.choice(valid_steps)
             print(f"PickerRobot {self.unique_id} moving from {self.pos} to {new_position}.")
+
+
+            #slowing down moving through river 
+            if any(isinstance (a, WaterAgent) for a in self.model.grid.get_cell_list_contents(new_position)):
+                print ("Picker Robot {self.unique_id} entering water at {self.position}.")
+                self.slowdown_counter = 5     #slow down for 5 steps 
             self.model.grid.move_agent(self, new_position)
             print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
             
@@ -339,7 +356,7 @@ class PickerRobot(Agent):
 
 
 #############################################################
-           ### Return To Base function 
+           ### Return To Base function (picker)
 #############################################################            
            
         
@@ -362,7 +379,7 @@ class PickerRobot(Agent):
 
 
 #############################################################
-           ### Wait function 
+           ### Wait function (picker)
 #############################################################
             
     def wait(self):
