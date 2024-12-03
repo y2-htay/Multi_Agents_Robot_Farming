@@ -292,13 +292,13 @@ class PickerRobot(Agent):
         """ 
         Move the robot to a random neighboring cell, avoiding trees 
         """
-        from model import TreeAgent, WaterAgent
+        from model import TreeAgent
         #from model import CropAgent
         # imported locally only before they are called / if imported globally at the top, it is circulr dependency with model.py
         possible_steps = self.model.grid.get_neighborhood(
             self.pos, moore = True, include_center=False
         )
-        valid_steps = [ step for step in possible_steps if not any(isinstance (a, (TreeAgent, WaterAgent)) for a in self.model.grid.get_cell_list_contents(step))] 
+        valid_steps = [ step for step in possible_steps if not any(isinstance (a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))] 
         # valid_steps = [
         #     step for step in possible_steps
         # #     if self.model.grid.is_cell_empty(step)   #check if the cell is empty 
