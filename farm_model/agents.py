@@ -388,5 +388,8 @@ class PickerRobot(Agent):
         """
         pass
     
+    # class name (inheriting from name):
+class SuperPicker(PickerRobot):
     
-    
+    def __init__(self, unique_id, pos, model):
+        super().__init__(unique_id, pos, model)
