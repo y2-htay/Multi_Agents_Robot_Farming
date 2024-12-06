@@ -126,13 +126,13 @@ class DroneRobot(Agent):
         ##Decrease battery 
         self.battery_tick += 1
 
-        if self.battery_tick >= 150:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
+        if self.battery_tick >= 50:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
             self.battery_tick =  0
             self.battery -= 1 
 
 
         #stop if battery is run out 
-        if self.battery <= 0:
+        if self.battery <= 90:
             print (f"Drone {self.unique_id} has run out of battery and is stopping at {self.pos}.")
             #return 
             self.return_to_base()
@@ -157,21 +157,36 @@ class DroneRobot(Agent):
 
 
         ######################################
-           ### Return to bsae Function (Drones)
+           ### Return to bsae Function (Drones) Working 
         ######################################
-        def return_to_base(self):
-            base_x, base_y = 0,0
+        
+    def return_to_base(self):
+            """
+            Move directly toward the base to drop off crops or recharge, without avoiding trees or slowing down in water.
+            """
+            # Define the base coordinates
+            base_x, base_y = 0, 0  # Assuming base is at (0, 0)
+            base_position = (base_x, base_y)
+
+            # If the drone is already at the base, stop
+            if self.pos == base_position:
+                print(f"DroneRobot {self.unique_id} has reached the base at {self.pos}.")
+                return
+
+            # Determine the direction to the base
             current_x, current_y = self.pos
-            dx = base_x-current_x
-            dy = base_y - current_y 
-            move_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0 ) 
-            move_y =  current_y + (1 if dy> 0 else -1 if dy < 0 else 0 )
-            new_position = (move_x, move_y)
-            if self.mode.grid.is_cell_empty(new_position):
-                self.model.grid.move_agent(self, new_position)
+            dx = base_x - current_x
+            dy = base_y - current_y
 
+            # Calculate the next step toward the base
+            move_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0)
+            move_y = current_y + (1 if dy > 0 else -1 if dy < 0 else 0)
+            next_position = (move_x, move_y)
 
-
+            # Move to the next position
+            print(f"DroneRobot {self.unique_id} moving from {self.pos} to {next_position}.")
+            self.model.grid.move_agent(self, next_position)
+        
 
 
 #############################################################

@@ -929,7 +929,20 @@
 
 
 
+# def return_to_base(self):
+        #     base_x, base_y = 0,0
+        #     current_x, current_y = self.pos
+        #     dx = base_x-current_x
+        #     dy = base_y - current_y 
+        #     move_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0 ) 
+        #     move_y =  current_y + (1 if dy> 0 else -1 if dy < 0 else 0 )
+        #     new_position = (move_x, move_y)
+        #     if self.mode.grid.is_cell_empty(new_position):
+        #         self.model.grid.move_agent(self, new_position)
 
+
+
+        # --------------------------------
 
 
 

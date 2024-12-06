@@ -153,41 +153,41 @@ class FarmModel(Model):
             
 
 
-        #num_robots = 2
-        ### debug drone init ##
-        # for i in range(num_robots):
-        #     print(f"Attempting to place DroneRobot {i}...")
-        #     x = self.random.randint(0, self.grid.width - 1)
-        #     y = self.random.randint(0, self.grid.height - 1)
-        #     drone_robot = DroneRobot(self.next_id(), (x, y), self)
-        #     self.grid.place_agent(drone_robot, (x, y))
-        #     self.schedule.add(drone_robot)
-        #     print(f"DroneRobot {i} placed at {(x, y)}.")
+        ##num_robots = 2
+        ## debug drone init ##
+        for i in range(num_robots):
+            print(f"Attempting to place DroneRobot {i}...")
+            x = self.random.randint(0, self.grid.width - 1)
+            y = self.random.randint(0, self.grid.height - 1)
+            drone_robot = DroneRobot(self.next_id(), (x, y), self)
+            self.grid.place_agent(drone_robot, (x, y))
+            self.schedule.add(drone_robot)
+            print(f"DroneRobot {i} placed at {(x, y)}.")
 
         #num_robots = 2
         #Placing Drones at base
-        for i in range(num_robots):
-            if not base_coordinates:
-                print("No more available base cells for PickerRobots")
-                break
+        # for i in range(num_robots):
+        #     if not base_coordinates:
+        #         print("No more available base cells for PickerRobots")
+        #         break
 
-            #Randomly select a base cell 
-            x, y = self.random.choice(base_coordinates)
+        #     #Randomly select a base cell 
+        #     x, y = self.random.choice(base_coordinates)
 
-            print(f"Placing Drones at base Cell ({x}, {y})")    # debug
+        #     print(f"Placing Drones at base Cell ({x}, {y})")    # debug
             
-            # drone = 0
-            # if bla
-            #   var = 4
-            # 
-            # print(var)
-            drone_robot = DroneRobot(self.next_id(), (x,y), self)
-            self.grid.place_agent(drone_robot, (x,y))
-            self.schedule.add(drone_robot)
+        #     # drone = 0
+        #     # if bla
+        #     #   var = 4
+        #     # 
+        #     # print(var)
+        #     drone_robot = DroneRobot(self.next_id(), (x,y), self)
+        #     self.grid.place_agent(drone_robot, (x,y))
+        #     self.schedule.add(drone_robot)
 
 
-            #remove selected coordinates to prevent duplicate placement 
-            # base_coordinates.remove((x,y))
+        #     #remove selected coordinates to prevent duplicate placement 
+        #     # base_coordinates.remove((x,y))
 
 
 
