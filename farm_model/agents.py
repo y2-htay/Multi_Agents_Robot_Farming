@@ -2,10 +2,14 @@ import warnings
 warnings.filterwarnings("ignore", category  = FutureWarning)
 import mesa
 from mesa import Agent
+import heapq
+from collections import deque
+
+
 #from .model import FREE, BUSY
 #from model import TreeAgent, CropAgent
 
-BATTERY_SKIP_THRESHOLD = 100   # picker - change thereadshold 
+BATTERY_SKIP_THRESHOLD = 5   # picker - change thereadshold 
 
 #defining the constants for states
 FREE = 1         #picker
@@ -105,7 +109,7 @@ class DroneRobot(Agent):
                 print(f"DroneRobot {self.unique_id} found a crop at {self.pos}")
                 return True
         return False
-    
+        
 
 
         ######################################
@@ -118,7 +122,7 @@ class DroneRobot(Agent):
         """
         print(f"DroneRobot {self.unique_id} at position {self.pos} with battery {self.battery}")
 
-
+        
         ##Decrease battery 
         self.battery_tick += 1
 
@@ -130,7 +134,8 @@ class DroneRobot(Agent):
         #stop if battery is run out 
         if self.battery <= 0:
             print (f"Drone {self.unique_id} has run out of battery and is stopping at {self.pos}.")
-            return 
+            #return 
+            self.return_to_base()
         
 
 
@@ -151,14 +156,19 @@ class DroneRobot(Agent):
 
 
 
-    
-
-
-
-
-
-
-
+        ######################################
+           ### Return to bsae Function (Drones)
+        ######################################
+        def return_to_base(self):
+            base_x, base_y = 0,0
+            current_x, current_y = self.pos
+            dx = base_x-current_x
+            dy = base_y - current_y 
+            move_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0 ) 
+            move_y =  current_y + (1 if dy> 0 else -1 if dy < 0 else 0 )
+            new_position = (move_x, move_y)
+            if self.mode.grid.is_cell_empty(new_position):
+                self.model.grid.move_agent(self, new_position)
 
 
 
@@ -186,7 +196,7 @@ class PickerRobot(Agent):
         self.battery_tick = 0
         self.type = "picker_robot"
 
-        #TODO : CAPACITY CHECK 
+        #TODO : CAPACITY CHECK
         
 
     #reach property checking positions only inside the grid. 
@@ -205,14 +215,11 @@ class PickerRobot(Agent):
     @property 
     def is_busy(self):
         return self.state == BUSY
+    
 
-
-
-
-
-#############################################################
-           ### step function (picker )
-#############################################################
+# #############################################################
+#            ### step function (picker )
+# #############################################################
     
     def step(self):
         """ 
@@ -239,42 +246,50 @@ class PickerRobot(Agent):
 
 
 
-#############################################################
-           ### Make Decison Function(picker)
-#############################################################
-    
+
+
+# #############################################################
+#            ### Make Decison Function(picker) 
+# #############################################################
+  
     def make_decision(self):
-        """ 
-        Decide the next action based on the robot's state and surrondings.
-        """
-        print(f"PickerRobot {self.unique_id} is making a decision.")
-        from model import CropAgent     
-        
-        if self.battery == 0 :
-            print(f"Picker battery died.")
-            return "wait"
-        
-        
-        # new added for capacity storage check 
-        if self.storage >= 1000:     #for inidvidual or both ?
-            print(f"Storage Full for PickerRobot")
-            return "wait" 
-            
-        if self.state == FREE:
-            #Check if there is a cropagent nearby (ignore treeagent )
-            crop_nearby = any(
-                isinstance(agent, CropAgent)
-                for agent in self.model.grid.get_neighbors(self.pos, moore = True, include_center = False, radius = 3)
-            )
-            print(f"PickerRobot {self.unique_id} Crop Nearby: {crop_nearby}")
-            return "pick" if crop_nearby else "move_randomly"
-        elif self.state == BUSY:
-            return "return_to_base" if self.storage >= self.capacity else "move_randomly"
-        else:
-            return "wait" 
-        
-       
-        
+      """
+      Decide the next action based on the robot's state and surroundings.
+      """
+      print(f"PickerRobot {self.unique_id} is making a decision.")
+      from model import CropAgent
+
+      # If the battery is depleted, return to base
+      if self.battery <= 90:
+          print(f"PickerRobot {self.unique_id} battery died. Returning to base.")
+          self.state = "returning"  # added states
+          return "return_to_base"   # return to base instead of wait 
+
+      # If storage is full, transition to "returning" state and return to base
+      if self.storage >= 1000:
+          print(f"PickerRobot {self.unique_id} storage is full. Returning to base.")
+          self.state = "returning"  ## added states 
+          return "return_to_base"   ## return to base instead of wait 
+
+      # If in "returning" state, continue heading back to the base, confirming it to go to base 
+      if self.state == "returning":
+          return "return_to_base"
+
+      # If free, check for nearby crops
+      if self.state == FREE:
+          crop_nearby = any(
+            isinstance(agent, CropAgent)
+            for agent in self.model.grid.get_neighbors(self.pos, moore=True, include_center=False, radius=3)
+        )
+          print(f"PickerRobot {self.unique_id} Crop Nearby: {crop_nearby}")
+          if crop_nearby:
+              return "pick"
+          else:
+              return "move_randomly"
+
+      # Default fallback
+      return "wait"
+   
    
 #############################################################
            ### Move Randomly function (picker)
@@ -282,7 +297,7 @@ class PickerRobot(Agent):
     
     
         
-    def move_randomly(self):    # responbile for movign the robot 
+    def move_randomly(self):    # responbile for moving the robot 
         """ 
         Move the robot to a random neighboring cell, avoiding trees , Reduce speed when moving through water
         """
@@ -356,26 +371,66 @@ class PickerRobot(Agent):
 
 
 #############################################################
-           ### Return To Base function (picker)
+           ### Return To Base function (picker) Working 
 #############################################################            
            
-        
-    
-    
+##   from collections import deque
+    ######  working working  #### 
     def return_to_base(self):
-        """ 
-        Move toward to the base to drop off crops       ( battery charging to be added later )
-        """
-        base_x, base_y = 0,0  
-        current_x, current_y = self.pos
-        dx = base_x - current_x      ##????
-        dy = base_y - current_y 
-        move_x = current_x +  ( 1 if dx > 0 else -1 if dx < 0 else 0 )
-        move_y = current_y +  (1 if dy > 0 else -1 if dy < 0 else 0 )
-        new_position = (move_x, move_y)
-        if self.model.grid.is_cell_empty(new_position):
-            self.model.grid.move_agent(self, new_position)
-            
+       """
+       Move toward the base to drop off crops, avoiding trees and slowing down in water.
+       Uses BFS to find a valid path to the base.
+       """
+       from model import TreeAgent, WaterAgent
+
+       # Define the base coordinates
+       base_x, base_y = 0, 0  # Assuming base is at (0, 0)
+       base_position = (base_x, base_y)
+
+       # If the robot is already at the base, stop
+       if self.pos == base_position:
+           print(f"PickerRobot {self.unique_id} has reached the base at {self.pos}.")
+           return
+
+       # BFS setup to find the shortest path to the base
+       queue = deque([(self.pos, [])])  # (current position, path taken)
+       visited = set()  # To avoid revisiting nodes
+       visited.add(self.pos)
+
+       while queue:
+           current_pos, path = queue.popleft()
+
+           # Check the current position for base
+           if current_pos == base_position:
+               # Follow the first step in the path to move toward the base
+               if path:
+                   next_step = path[0]
+
+                   # Check for water slowdown
+                   if hasattr(self, 'slowdown_counter') and self.slowdown_counter > 0:
+                       print(f"PickerRobot {self.unique_id} is slowing down near the water.")
+                       self.slowdown_counter -= 1
+                       return  # Skip this step
+
+                   if any(isinstance(a, WaterAgent) for a in self.model.grid.get_cell_list_contents(next_step)):
+                       print(f"PickerRobot {self.unique_id} entering water at {next_step}.")
+                       self.slowdown_counter = 5  # Slow down for 5 steps
+
+                   # Move to the next step
+                   print(f"PickerRobot {self.unique_id} moving from {self.pos} to {next_step}.")
+                   self.model.grid.move_agent(self, next_step)
+               return
+
+           # Explore neighbors
+           possible_steps = self.model.grid.get_neighborhood(current_pos, moore=True, include_center=False)
+           for step in possible_steps:
+               # Avoid revisiting and avoid trees
+               if step not in visited and not any(isinstance(a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step)):
+                   visited.add(step)
+                   queue.append((step, path + [step]))
+
+       print(f"PickerRobot {self.unique_id} could not find a path to the base from {self.pos}.")
+
 
 
 #############################################################
@@ -388,8 +443,12 @@ class PickerRobot(Agent):
         """
         pass
     
+
+############################################################
+
+
     # class name (inheriting from name):
-class SuperPicker(PickerRobot):
+# class SuperPicker(PickerRobot):
     
-    def __init__(self, unique_id, pos, model):
-        super().__init__(unique_id, pos, model)
+#     def __init__(self, unique_id, pos, model):
+#         super().__init__(unique_id, pos, model)

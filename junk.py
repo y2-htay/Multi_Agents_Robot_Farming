@@ -895,6 +895,13 @@
     # return portrayal
 
 
+
+
+
+
+
+
+
 ################################################################################################################################################################################################
 
 
@@ -903,6 +910,662 @@
 
 
 ################################################################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ################ New Drones ########################
+
+
+# class DroneRobot(Agent):
+#     """Drones"""
+#     def __init__(self, unique_id, pos, model):
+#         print(f"Initialising the drone robot with {unique_id}, {pos}, {model}")
+#         super().__init__(unique_id, model)
+#         self.pos = pos
+#         self.state = "idle"      ## "idle" or "searching"
+#         self.battery =  100
+#         self.battery_tick = 0
+#         self.type =  "drone_robot"
+#         #for dynamic arrow 
+#         self.prev_pos = pos # Track previous position ( # for dynamic heading )
+#         self.heading = (0,0)
+
+
+#     # Dynamic Arrowhead (new )
+#     def arrow_step(self):
+#         """update position and heading dynamically for the arrow"""
+#         #from mesa.space import MultiGrid     #ensuring grid handling works correctly
+
+
+#         p_x, p_y = self.prev_pos
+#         c_x, c_y = self.pos
+        
+#         if (p_x < c_x):
+#             self.heading = (1,0)
+#         elif (p_x > c_x):
+#             self.heading = (-1,0)
+#         elif (p_y < c_y):
+#             self.heading = (0,1)
+#         elif (p_y > c_y):
+#             self.heading = (0,-1)
+#          # Debugging
+#         print(f"Drone {self.unique_id}: Prev Pos = {self.prev_pos}, Current Pos = {self.pos}, Heading = {self.heading}")
+
+
+
+
+    
+#     @property 
+#     def is_busy(self):
+#         return self.state == BUSY
+    
+
+# ###############step function for drones##############
+
+#     def step
+
+
+    
+
+
+
+
+##########  Return to base using dijkstra algorithm ####################
+### needs to be outside the class ,: python treats it as a method requiring a self argument , 
+# @staticmethod
+# def dijkstra(grid, start, goal):
+#        """
+#        Dijkstra's Algorithm for finding the shortest path in a grid.
+#        :param grid: The grid (MultiGrid object from Mesa).
+#        :param start: Start position (x, y).
+#        :param goal: Goal position (x, y).
+#        :return: List of positions representing the shortest path.
+#        """
+#        # Priority queue for Dijkstra
+#        queue = [(0, start)]  # (cost, position)
+#        visited = set()
+#        came_from = {}
+#        cost_so_far = {start: 0}
+
+#        while queue:
+#            current_cost, current_pos = heapq.heappop(queue)
+
+#            if current_pos in visited:
+#                continue
+#            visited.add(current_pos)
+
+#            # Stop if we reach the goal
+#            if current_pos == goal:
+#                break
+
+#            # Get neighbors
+#            x, y = current_pos
+#            neighbors = [
+#                (x + dx, y + dy)
+#                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Von Neumann neighborhood
+#                if 0 <= x + dx < grid.width and 0 <= y + dy < grid.height
+#            ]
+
+#            for neighbor in neighbors:
+#                # Assume cost of moving is 1 (adjust for terrain if needed)
+#                new_cost = current_cost + 1
+
+#                if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
+#                    cost_so_far[neighbor] = new_cost
+#                    priority = new_cost
+#                    heapq.heappush(queue, (priority, neighbor))
+#                    came_from[neighbor] = current_pos
+
+#        # Reconstruct path
+#        path = []
+#        current = goal
+#        while current != start:
+#            path.append(current)
+#            current = came_from.get(current, start)
+#        path.reverse()
+
+#        return path
+
+
+
+
+#############################################################
+#            ### Make Decison Function(picker) original working main one before , adding return_to_base function 
+# ############################################################
+
+  
+#     def make_decision(self):
+#         """ 
+#         Decide the next action based on the robot's state and surrondings.
+#         """
+#         print(f"PickerRobot {self.unique_id} is making a decision.")
+#         from model import CropAgent     
+        
+#         if self.battery == 0 :
+#             print(f"Picker battery died.")
+#             return "wait"
+        
+        
+#         # new added for capacity storage check 
+#         if self.storage >= 1000:     #for inidvidual or both ?
+#             print(f"Storage Full for PickerRobot")
+#             return "wait" 
+            
+#         if self.state == FREE:
+#             #Check if there is a cropagent nearby (ignore treeagent )
+#             crop_nearby = any(
+#                 isinstance(agent, CropAgent)
+#                 for agent in self.model.grid.get_neighbors(self.pos, moore = True, include_center = False, radius = 3)
+#             )
+#             print(f"PickerRobot {self.unique_id} Crop Nearby: {crop_nearby}")
+#             return "pick" if crop_nearby else "move_randomly"
+#         elif self.state == BUSY:
+#             return "return_to_base" if self.storage >= self.capacity else "move_randomly"
+#         else:
+#             return "wait" 
+        
+
+
+
+
+#############################################################
+           ### Make Decison Function(picker)   Test for returning to base 
+#############################################################
+    
+    # def make_decision(self):
+    #     """ 
+    #     Decide the next action based on the robot's state and surrondings.
+    #     """
+    #     print(f"PickerRobot {self.unique_id} is making a decision.")
+    #     from model import CropAgent     
+        
+    #     if self.battery == 0 :
+    #         print(f"Picker battery died.")
+    #         return "return_to_base"
+        
+        
+    #     # new added for capacity storage check 
+    #     if self.storage >= 5:     #for inidvidual or both ?
+    #         print(f"Storage Full for PickerRobot")
+    #         return "return to base" 
+            
+    #     if self.state == FREE:
+    #         #Check if there is a cropagent nearby (ignore treeagent )
+    #         crop_nearby = any(
+    #             isinstance(agent, CropAgent)
+    #             for agent in self.model.grid.get_neighbors(self.pos, moore = True, include_center = False, radius = 3)
+    #         )
+    #         print(f"PickerRobot {self.unique_id} Crop Nearby: {crop_nearby}")
+    #         return "pick" if crop_nearby else "move_randomly"
+    #     elif self.state == BUSY:
+    #         return "return_to_base" if self.storage >= self.capacity else "move_randomly"
+    #     else:
+    #         return "wait"    
+        
+
+
+# -----------------------------------------------
+
+#############################################################
+           ### step function (picker ) Test for return to base 
+#############################################################
+    
+    # def step(self):
+    #     """ 
+    #     Define the behaviour of the robot at each step 
+    #     """
+    #     print(f"PickerRobot {self.unique_id} is stepping at position {self.pos}.")
+    #     print("battery for ", self.unique_id, " = ", self.battery)
+    #     print("Storage for", self.unique_id, "=", self.storage)
+
+        
+    #     #decrease battery level every few ticks 
+    #     self.battery_tick += 1
+        
+    #     if self.battery_tick == BATTERY_SKIP_THRESHOLD:
+    #         self.battery_tick = 0
+    #         self.battery -= 1
+            
+        
+    #     print(f"PickerRobot {self.unique_id} is taking a step at position {self.pos}.") #debug
+    #     #Decision making 
+    #     action = self.make_decision()
+    #     print(f"PickerRobot {self.unique_id} decided to : {action }")     #debug print for the visual movement of pickerrobot 
+    #     getattr(self,action)()        #execuse the chosen action 
+
+# ---------------------------------------
+    # def step(self):
+    #   """
+    #   Define the behavior of the robot at each step.
+    #   """
+    #   print(f"PickerRobot {self.unique_id} is stepping at position {self.pos}.")
+    #   print(f"Battery for {self.unique_id}: {self.battery}, Storage: {self.storage}")
+
+    #   # Decrease battery level every few ticks
+    #   self.battery_tick += 1
+    #   if self.battery_tick == BATTERY_SKIP_THRESHOLD:
+    #       self.battery_tick = 0
+    #       self.battery -= 1
+
+    #   # Make a decision and execute the corresponding action
+    #   action = self.make_decision()
+    #   print(f"PickerRobot {self.unique_id} decided to: {action}")
+    #   getattr(self, action)()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### not working 
+    # def return_to_base(self):
+    #     """ 
+    #     Move toward to the base to drop off crops       ( battery charging to be added later )
+    #     """
+    #     ##debug
+    #     print(f"picker robot is returning to base")
+    #     base_x, base_y = 0,0  
+    #     current_x, current_y = self.pos
+    #     dx = base_x - current_x      ##????
+    #     dy = base_y - current_y 
+    #     move_x = current_x +  ( 1 if dx > 0 else -1 if dx < 0 else 0 )
+    #     move_y = current_y +  (1 if dy > 0 else -1 if dy < 0 else 0 )
+    #     new_position = (move_x, move_y)
+    #     if self.model.grid.is_cell_empty(new_position):
+    #         self.model.grid.move_agent(self, new_position)
+            
+
+
+
+    #--------------------------
+    #### not working 
+    # def return_to_base(self):
+    #     """ 
+    #     Move toward the base (0, 0) step by step to drop off crops.
+    #     """
+    #     base_x, base_y = 0, 0  # Base coordinates
+    #     current_x, current_y = self.pos
+
+    #    # Debugging output
+    #     print(f"PickerRobot {self.unique_id} at {self.pos} returning to base at {(base_x, base_y)}")
+
+    #    # Determine the direction to move in each axis
+    #     dx = base_x - current_x
+    #     dy = base_y - current_y
+
+    #    # Calculate next step coordinates
+    #     next_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0)
+    #     next_y = current_y + (1 if dy > 0 else -1 if dy < 0 else 0)
+
+    #    # Check valid moves in each direction
+    #     possible_moves = [
+    #        (next_x, current_y),  # Move horizontally
+    #        (current_x, next_y),  # Move vertically
+    #     ]
+
+    #    # Filter valid moves (inside grid and unoccupied)
+    #     valid_moves = [
+    #        move for move in possible_moves
+    #        if (
+    #           0 <= move[0] < self.model.grid.width and
+    #           0 <= move[1] < self.model.grid.height and
+    #           self.model.grid.is_cell_empty(move)
+    #         )
+    #     ]   
+
+    #     if  valid_moves:
+    #         # Choose the first valid move
+    #         new_position = valid_moves[0]
+    #         print(f"PickerRobot {self.unique_id} moving from {self.pos} to {new_position}.")
+    #         self.model.grid.move_agent(self, new_position)
+    #     else:
+    #         print(f"PickerRobot {self.unique_id} cannot move to base; all possible moves are blocked.")
+
+
+
+####-----------------------------------------------
+
+    
+    # #### return to base without constraints (working )
+    # def return_to_base(self):
+    #    """
+    #    Move toward the base (0, 0) using Dijkstra's Algorithm to find the shortest path.
+    #    """
+    #    base_x, base_y = 0, 0  # Base coordinates
+    #    current_pos = self.pos
+
+    #    # Find the shortest path
+    #    path = dijkstra(self.model.grid, current_pos, (base_x, base_y))
+
+    #    if not path:
+    #        print(f"PickerRobot {self.unique_id} cannot find a path to the base.")
+    #        return
+
+    #    # Move one step along the path
+    #    next_step = path[0]  # Take the first step toward the base
+    #    print(f"PickerRobot {self.unique_id} moving from {self.pos} to {next_step}.")
+    #    self.model.grid.move_agent(self, next_step)
+    #    #self.add.grid.schedule(PickerRobot)
+      
+
+####-----------------------------------------------
+    #### return to base avoiding constraints (slowdown in water and avoid trees - not working )
+    # def return_to_base(self):
+    #   """ 
+    #   Move toward the base (0, 0) step by step, avoiding trees and slowing down near water.
+    #   """
+    #   from model import TreeAgent, WaterAgent  # Import dependencies
+
+    #   base_x, base_y = 0, 0  # Base coordinates
+    #   current_x, current_y = self.pos
+
+    #   # Debugging
+    #   print(f"PickerRobot {self.unique_id} at {self.pos} returning to base at {(base_x, base_y)}")
+
+    #   # If the robot is slowed down by water, skip this step
+    #   if hasattr(self, 'slowdown_counter') and self.slowdown_counter > 0:
+    #       print(f"PickerRobot {self.unique_id} is slowing down near water.")
+    #       self.slowdown_counter -= 1
+    #       return
+
+    #   # Calculate movement direction
+    #   dx = base_x - current_x
+    #   dy = base_y - current_y
+    #   next_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0)
+    #   next_y = current_y + (1 if dy > 0 else -1 if dy < 0 else 0)
+
+    #   # Create a list of potential steps toward the base
+    #   possible_steps = [
+    #       (next_x, current_y),  # Horizontal move
+    #       (current_x, next_y)   # Vertical move
+    #   ]
+
+    #   # Filter out invalid steps (trees and out-of-bounds cells)
+    #   valid_steps = [
+    #       step for step in possible_steps
+    #       if (
+    #           0 <= step[0] < self.model.grid.width and
+    #           0 <= step[1] < self.model.grid.height and
+    #           not any(isinstance(a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))
+    #       )
+    #   ]
+
+    #   if valid_steps:
+    #       # Select the first valid step (prioritizes moving closer to the base)
+    #       new_position = valid_steps[0]
+
+    #       # Check if the new position contains water
+    #       if any(isinstance(a, WaterAgent) for a in self.model.grid.get_cell_list_contents(new_position)):
+    #           print(f"PickerRobot {self.unique_id} entering water at {new_position}.")
+    #           self.slowdown_counter = 5  # Slow down for 5 steps
+
+    #       # Move to the new position
+    #       print(f"PickerRobot {self.unique_id} moving from {self.pos} to {new_position}.")
+    #       self.model.grid.move_agent(self, new_position)
+    #   else:
+    #       print(f"PickerRobot {self.unique_id} cannot move to base; all possible moves are blocked.")
+
+
+######################## return to base using breadth first search ########################
+##########################################################################################
+#     from collections import deque
+
+#     def find_path_around_trees(grid, start, goal):
+#       """
+#       Breadth-First Search (BFS) to find a path avoiding trees, designed for Mesa's MultiGrid.
+#       """
+#       from model import TreeAgent
+
+#       queue = deque([(start, [])])  # (current_position, path_taken)
+#       visited = set()
+
+#       while queue:
+#           current, path = queue.popleft()
+
+#           # If we've reached the goal, return the path
+#           if current == goal:
+#               return path + [current]
+
+#           # Mark the current position as visited
+#           visited.add(current)
+
+#           # Get neighbors in the grid
+#           x, y = current
+#           neighbors = [
+#               (x + dx, y + dy)
+#               for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Von Neumann neighborhood
+#               if 0 <= x + dx < grid.width and
+#                  0 <= y + dy < grid.height and
+#                  (x + dx, y + dy) not in visited and
+#                  not any(isinstance(agent, TreeAgent) for agent in grid.get_cell_list_contents((x + dx, y + dy)))
+#           ]
+
+#           # Add neighbors to the queue
+#           for neighbor in neighbors:
+#               queue.append((neighbor, path + [current]))
+
+#       # If no path is found
+#       return []
+
+    
+# ## return 
+#     def return_to_base(self):
+#       """
+#       Move toward the base (0, 0) step by step, avoiding trees and slowing down near water.
+#       Designed for Mesa's MultiGrid and agent behavior.
+#       """
+#       from model import WaterAgent
+
+#       base_x, base_y = 0, 0  # Base coordinates
+#       current_pos = self.pos
+
+#       # If the robot is slowed down by water, skip this step
+#       if hasattr(self, 'slowdown_counter') and self.slowdown_counter > 0:
+#           print(f"PickerRobot {self.unique_id} is slowing down near water.")
+#           self.slowdown_counter -= 1
+#           return
+
+#       # Find a path avoiding trees
+#       path = self.find_path_around_trees(self.model.grid, current_pos, (base_x, base_y))
+
+#       if not path:
+#           print(f"PickerRobot {self.unique_id} cannot find a path to the base.")
+#           return
+
+#       # Move one step along the path
+#       next_step = path[0]
+#       print(f"PickerRobot {self.unique_id} moving from {self.pos} to {next_step}.")
+
+#       # Check if the new position contains water
+#       if any(isinstance(agent, WaterAgent) for agent in self.model.grid.get_cell_list_contents(next_step)):
+#           print(f"PickerRobot {self.unique_id} entering water at {next_step}.")
+#           self.slowdown_counter = 5  # Slow down for 5 steps
+
+#       # Move the robot
+#       self.model.grid.move_agent(self, next_step)
+
+############## return to base ( shadowed form move randomly )
+    
+
+    ### works( avoiding trees and slowing down in water ) but not efficient , - not prioritizing the way back , 
+    # def return_to_base(self):
+    #   """
+    #   Move toward the base to drop off crops, avoiding trees and slowing down in water.
+    #   """
+    #   from model import TreeAgent, WaterAgent
+
+    #   # Define the base coordinates
+    #   base_x, base_y = 0, 0  # Assuming base is at (0, 0)
+
+    #   # Get current position
+    #   current_x, current_y = self.pos
+
+    #   # Calculate the direction to move toward the base
+    #   dx = base_x - current_x
+    #   dy = base_y - current_y
+
+    #   # Normalize the direction to a single step
+    #   move_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0)
+    #   move_y = current_y + (1 if dy > 0 else -1 if dy < 0 else 0)
+    #   new_position = (move_x, move_y)
+
+    #   # Get the possible steps (Moore neighborhood)
+    #   possible_steps = self.model.grid.get_neighborhood(self.pos, moore=True, include_center=False)
+
+    #   # Filter valid steps (avoid trees)
+    #   valid_steps = [step for step in possible_steps if not any(isinstance(a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))]
+
+    #   # Check if the new position is valid
+    #   if new_position in valid_steps:
+    #       # Check if the new position contains water to slow down
+    #       if hasattr(self, 'slowdown_counter') and self.slowdown_counter > 0:
+    #           print(f"PickerRobot {self.unique_id} is slowing down near the water.")
+    #           self.slowdown_counter -= 1
+    #           return  # Skip this step
+
+    #       if any(isinstance(a, WaterAgent) for a in self.model.grid.get_cell_list_contents(new_position)):
+    #           print(f"PickerRobot {self.unique_id} entering water at {new_position}.")
+    #           self.slowdown_counter = 5  # Slow down for 5 steps
+
+    #       # Move the robot to the new position
+    #       print(f"PickerRobot {self.unique_id} moving from {self.pos} to {new_position}.")
+    #       self.model.grid.move_agent(self, new_position)
+    #       print(f"PickerRobot {self.unique_id} moved to {new_position}.")
+    #   else:
+    #       print(f"PickerRobot {self.unique_id} cannot move directly to {new_position}, finding an alternative path.")
+    #       # Choose an alternative valid step randomly
+    #       if valid_steps:
+    #           alternative_position = self.random.choice(valid_steps)
+    #           if any(isinstance(a, WaterAgent) for a in self.model.grid.get_cell_list_contents(alternative_position)):
+    #               print(f"PickerRobot {self.unique_id} entering water at {alternative_position}.")
+    #               self.slowdown_counter = 5  # Slow down for 5 steps
+
+    #           self.model.grid.move_agent(self, alternative_position)
+    #           print(f"PickerRobot {self.unique_id} moved to {alternative_position}.")
+
+
+
+    ##### not working #####
+    # def return_to_base(self):
+    #   """
+    #   Move toward the base to drop off crops, avoiding trees and slowing down in water.
+    #   """
+    #   from model import TreeAgent, WaterAgent
+
+    #   # Define the base coordinates
+    #   base_x, base_y = 0, 0  # Assuming base is at (0, 0)
+
+    #   # Get the current position
+    #   current_x, current_y = self.pos
+
+    #   # Get all possible steps (Moore neighborhood)
+    #   possible_steps = self.model.grid.get_neighborhood(self.pos, moore=True, include_center=False)
+
+    #   # Filter out steps blocked by trees
+    #   valid_steps = [step for step in possible_steps if not any(isinstance(a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))]
+
+    #   if not valid_steps:
+    #       print(f"PickerRobot {self.unique_id} is stuck and cannot move.")
+    #       return  # No valid moves available
+
+    #   # Calculate the Manhattan distance to the base for each valid step
+    #   valid_steps_with_distance = [(step, abs(base_x - step[0]) + abs(base_y - step[1])) for step in valid_steps]
+
+    #   # Sort steps by distance to the base (ascending)
+    #   valid_steps_with_distance.sort(key=lambda x: x[1])
+
+    #   # Choose the step that brings the robot closest to the base
+    #   best_step = valid_steps_with_distance[0][0]
+
+    #   # If the best step contains water, slow down
+    #   if hasattr(self, 'slowdown_counter') and self.slowdown_counter > 0:
+    #       print(f"PickerRobot {self.unique_id} is slowing down near water.")
+    #       self.slowdown_counter -= 1
+    #       return  # Skip this step
+
+    #   if any(isinstance(a, WaterAgent) for a in self.model.grid.get_cell_list_contents(best_step)):
+    #       print(f"PickerRobot {self.unique_id} entering water at {best_step}.")
+    #       self.slowdown_counter = 5  # Slow down for 5 steps
+
+    #   # Move the robot to the best step
+    #   print(f"PickerRobot {self.unique_id} moving from {self.pos} to {best_step}.")
+    #   self.model.grid.move_agent(self, best_step)
+    #   print(f"PickerRobot {self.unique_id} moved to {best_step}.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
  # crops = [ a for a in self.model.grid.get_cell_list_contents(each)if isinstance (a, CropAgent)]
