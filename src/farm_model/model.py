@@ -249,7 +249,14 @@ class FarmModel(Model):
             x, y = self.random.choice(base_coordinates)
 
             print(f"Placing PickerRobot at base Cell ({x}, {y})")    # debug
-            picker_robot = PickerRobot(self.next_id(), (x,y), self)
+            picker_robot = PickerRobot(self.next_id(), (x,y), self)    # change the mode here, if mode == extended 
+
+            ## change the robot based on mode 
+            # if mode == 'basic':
+            #     picker_robot = PickerRobot(self.next_id(), (x,y), self) 
+            # elif mode == 'extended':
+            #     picker_robot = ExtendedPickerRobot(self.next_id(), (x,y), self) 
+            
             self.grid.place_agent(picker_robot, (x,y))
             self.schedule.add(picker_robot)
 
