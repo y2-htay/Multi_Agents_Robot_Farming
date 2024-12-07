@@ -8,7 +8,7 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/run.py",
+            "program": "${workspaceFolder}/src/farm_model/run.py",
             "console": "integratedTerminal"
         }
     ]

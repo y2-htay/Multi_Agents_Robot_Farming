@@ -569,6 +569,13 @@ class DroneRobot(Agent):
 
         # Move randomly if no crop is found
         self.move_randomly()
+        
+        
+        
+        
+        ####### -----------------------
+        
+        
 
     def check_for_crop(self):
         """
@@ -583,17 +590,46 @@ class DroneRobot(Agent):
 
 
 ### utility function to calculate the distance 
-    def calculate_distance(pos1, pos2):
-        """Calculate Manhattan distance between two points."""
-        return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+    # def get_distance(pos1, pos2):
+    #     """Calculate Manhattan distance between two points."""
+    #     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
     
 
+    # def signal_picker(self):
+    #     """
+    #     Signal pickers at the base about the crop location.
+    #     """
+    #     from agents import PickerRobot
+
+    #     pickers = [
+    #         agent for agent in self.model.schedule.agents
+    #         if isinstance(agent, PickerRobot) and agent.state == "waiting"
+    #     ]
+
+    #     if not pickers:
+    #         print(f"No pickers available to signal.")
+    #         return
+
+    #     # Find the nearest picker
+    #     nearest_picker = min(
+    #         pickers, key=lambda picker: self.model.grid.get_distance(self.pos, picker.pos)
+    #     )
+
+    #     # Assign crop location to the picker
+    #     nearest_picker.target_pos = self.pos
+    #     nearest_picker.state = "moving_to_crop"
+    #     print(f"Drone {self.unique_id} signaled Picker {nearest_picker.unique_id} to move to {self.pos}.")
+
+    ### -----------------------------------------------------------------------
+    
+    
     def signal_picker(self):
         """
         Signal pickers at the base about the crop location.
         """
         from agents import PickerRobot
 
+        # Find pickers in the "waiting" state
         pickers = [
             agent for agent in self.model.schedule.agents
             if isinstance(agent, PickerRobot) and agent.state == "waiting"
@@ -603,15 +639,21 @@ class DroneRobot(Agent):
             print(f"No pickers available to signal.")
             return
 
-        # Find the nearest picker
+        # Calculate Manhattan distance between the drone and each picker
+        def manhattan_distance(pos1, pos2):
+            return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+
+        # Find the nearest picker using the Manhattan distance
         nearest_picker = min(
-            pickers, key=lambda picker: self.model.grid.get_distance(self.pos, picker.pos)
+            pickers, key=lambda picker: manhattan_distance(self.pos, picker.pos)
         )
 
-        # Assign crop location to the picker
+        # Assign crop location to the nearest picker
         nearest_picker.target_pos = self.pos
         nearest_picker.state = "moving_to_crop"
         print(f"Drone {self.unique_id} signaled Picker {nearest_picker.unique_id} to move to {self.pos}.")
+
+
 
 
 
@@ -1053,6 +1095,7 @@ class PickerRobot(Agent):
                 print(f"Picker {self.unique_id} picked a crop at {self.pos}.")
                 self.model.grid.remove_agent(agent)
                 self.storage += 1
+                self.state = "waiting"
 
 
     def make_decision(self):
@@ -1211,9 +1254,9 @@ class PickerRobot(Agent):
         next_pos = (move_x, move_y)
 
         # Move to the next position
-        if self.model.grid.is_cell_empty(next_pos):
-            self.model.grid.move_agent(self, next_pos)
-            print(f"{self.unique_id} moved to {next_pos}.")
+        # if self.model.grid.is_cell_empty(next_pos):
+        self.model.grid.move_agent(self, next_pos)
+        print(f"{self.unique_id} moved to {next_pos}.")
 
 
 
