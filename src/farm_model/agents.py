@@ -531,6 +531,7 @@ class DroneRobot(Agent):
         self.battery_tick = 0
         self.type = "drone_robot"
         self.signal_queue = []  # To store crop locations to signal pickers
+        self.picker_id_waiting = None
 
 
     def step(self):
@@ -553,7 +554,7 @@ class DroneRobot(Agent):
 
         # If waiting for a picker to arrive, don't move
         if self.state == "waiting":
-            print(f"Drone {self.unique_id} is waiting for a picker at {self.pos}.")
+            print(f"Drone {self.unique_id} is waiting for a picker {self.picker_id_waiting} at {self.pos}.")
             # Check if a picker has arrived
             if any(isinstance(agent, PickerRobot) and agent.pos == self.pos for agent in self.model.grid.get_cell_list_contents(self.pos)):
                 print(f"Picker has arrived at {self.pos}. Drone {self.unique_id} will resume searching.")
@@ -651,6 +652,7 @@ class DroneRobot(Agent):
         # Assign crop location to the nearest picker
         nearest_picker.target_pos = self.pos
         nearest_picker.state = "moving_to_crop"
+        self.picker_id_waiting = nearest_picker.unique_id
         print(f"Drone {self.unique_id} signaled Picker {nearest_picker.unique_id} to move to {self.pos}.")
 
 
@@ -1095,6 +1097,8 @@ class PickerRobot(Agent):
                 print(f"Picker {self.unique_id} picked a crop at {self.pos}.")
                 self.model.grid.remove_agent(agent)
                 self.storage += 1
+                self.state = "waiting"
+            else:
                 self.state = "waiting"
 
 

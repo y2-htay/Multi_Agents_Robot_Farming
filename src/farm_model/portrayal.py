@@ -18,6 +18,7 @@ def farm_portrayal(agent):
             "Filled" : "true",
             "r": 0.7,
             "Layer" : 2,
+            "id": agent.unique_id
             #"r" : 0.7,
             # "x": agent.pos[0],
             # "y": agent.pos[1],
@@ -191,6 +192,7 @@ def drone_robot_portrayal(agent):
             "scale" : 0.7, 
             "heading_x": heading_x, 
             "heading_y" : heading_y, 
+            "id": agent.unique_id
         }
 
 
