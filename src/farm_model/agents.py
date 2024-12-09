@@ -555,6 +555,8 @@ class DroneRobot(Agent):
         # If waiting for a picker to arrive, don't move
         if self.state == "waiting":
             print(f"Drone {self.unique_id} is waiting for a picker {self.picker_id_waiting} at {self.pos}.")
+            if not self.check_for_crop():
+                self.state = 'searching'
             # Check if a picker has arrived
             if any(isinstance(agent, PickerRobot) and agent.pos == self.pos for agent in self.model.grid.get_cell_list_contents(self.pos)):
                 print(f"Picker has arrived at {self.pos}. Drone {self.unique_id} will resume searching.")
@@ -1046,7 +1048,7 @@ class PickerRobot(Agent):
                 self.state = "picking"
             else:
                 self.move_towards(self.target_pos)  # Move towards the target crop
-            return
+                return      ############## one picker following the first one 
 
         # Picking crops
         if self.state == "picking":
