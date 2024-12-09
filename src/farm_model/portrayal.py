@@ -78,21 +78,51 @@ def tree_portrayal(tree):
         #"y": tree.pos[1],
     }
 
+# def crop_portrayal(crop):
+#     """
+#     Portrayal for CropAgent.
+#     """
+#     if crop is None:
+#         raise AssertionError
+#     return {
+#         "Shape": "circle",
+#         "Color": "pink",
+#         "Layer": 1,
+#         "r": 0.8,
+#         "Filled": "true",
+#         #"x": crop.pos[0],
+#         #"y": crop.pos[1],
+#     }
+
+####################################
+    #### Crop portrayl with aging  test
+####################################
+
 def crop_portrayal(crop):
     """
-    Portrayal for CropAgent.
+    Portrayal for CropAgent based on its growth stage.
     """
     if crop is None:
         raise AssertionError
+
+    color_map = {
+        "seed": "#black",  # Light yellow   "#FFFF99"
+        "immature": "#yellow",  # Orange    "#FFA500"
+        "mature": "red",  # Green (default for current crops)   #008000"
+    }
+
     return {
         "Shape": "circle",
-        "Color": "pink",
+        "Color": color_map.get(crop.growth_stage, "red"),  # Default to mature color
         "Layer": 1,
         "r": 0.8,
         "Filled": "true",
-        #"x": crop.pos[0],
-        #"y": crop.pos[1],
     }
+
+
+
+
+
 
 def path_portrayal(path):
     """

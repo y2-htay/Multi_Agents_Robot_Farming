@@ -327,24 +327,47 @@ class FarmModel(Model):
     #######################
 
 
-    ##crops functions meant for overlapping on trees
+    # ##crops functions meant for overlapping on trees
+    # def create_crops(self, crops_coordinates):
+    #     for (x, y) in crops_coordinates:
+    #         #Check if the cell contains a TreeAgent
+    #         existing_agents = self.grid.get_cell_list_contents((x,y))
+    #         has_tree = any(isinstance(agent, TreeAgent)for agent in existing_agents)
+            
+            
+    #         if not has_tree:
+    #             #print(f"Skipping CropAgent at ({x},{y})")
+    #             continue      #skip this position if there is no tree
+            
+            
+    #         #place the CropAgent
+    #         #print(f"Placing CropAgent at ({x}, {y})")
+    #         crop_agent = CropAgent(self.next_id(), (x,y), self)
+    #         self.grid.place_agent(crop_agent, (x,y))
+    #         self.schedule.add(crop_agent)
+            
+            
+            
+    #######################
+      ## Crop Function ( test for aging ) 
+    #######################
+    
     def create_crops(self, crops_coordinates):
         for (x, y) in crops_coordinates:
-            #Check if the cell contains a TreeAgent
-            existing_agents = self.grid.get_cell_list_contents((x,y))
-            has_tree = any(isinstance(agent, TreeAgent)for agent in existing_agents)
-            
+            # Check if the cell contains a TreeAgent
+            existing_agents = self.grid.get_cell_list_contents((x, y))
+            has_tree = any(isinstance(agent, TreeAgent) for agent in existing_agents)
             
             if not has_tree:
-                #print(f"Skipping CropAgent at ({x},{y})")
-                continue      #skip this position if there is no tree
+                # Skip this position if there is no tree
+                continue 
             
-            
-            #place the CropAgent
-            #print(f"Placing CropAgent at ({x}, {y})")
-            crop_agent = CropAgent(self.next_id(), (x,y), self)
-            self.grid.place_agent(crop_agent, (x,y))
+            # Place the CropAgent with the default stage as "mature"
+            crop_agent = CropAgent(self.next_id(), (x, y), self, growth_stage = "mature")
+            self.grid.place_agent(crop_agent, (x, y))
             self.schedule.add(crop_agent)
+
+    
             
     #######################
       ##  Path Function
@@ -411,12 +434,27 @@ class TreeAgent(Agent):
         self.pos = pos
 
 
+# class CropAgent(Agent):
+#     def __init__(self,  _id, pos, model):
+#         super().__init__( _id,  model)
+#         self.type = "crop"
+#         self.pos = pos
+#         #super().__init__(_id, model)
+
+######################
+## crop aging test 
+#####################
+
+
 class CropAgent(Agent):
-    def __init__(self,  _id, pos, model):
-        super().__init__( _id,  model)
+    def __init__(self,  _id, pos, model, growth_stage = "mature"):
+        super().__init__( _id, model)    #pos not needed to be passed 
         self.type = "crop"
         self.pos = pos
-        #super().__init__(_id, model)
+        self.growth_stage = growth_stage  # default stage -> mature for originally located crops
+        self.crop_timer = 0       #timer for advancing crop age 
+        self.growth_stages = ["seed", "immature", "mature"]      # crop stages 
+        
 
 
 class PathAgent(Agent):
