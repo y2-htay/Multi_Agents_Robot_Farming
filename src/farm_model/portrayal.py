@@ -106,8 +106,8 @@ def crop_portrayal(crop):
         raise AssertionError
 
     color_map = {
-        "seed": "#black",  # Light yellow   "#FFFF99"
-        "immature": "#yellow",  # Orange    "#FFA500"
+        "seed": "gray",  # Light yellow   "#FFFF99"
+        "immature": "yellow",  # Orange    "#FFA500"
         "mature": "red",  # Green (default for current crops)   #008000"
     }
 

@@ -269,6 +269,7 @@ class FarmModel(Model):
 
         
 
+
         
             
 
@@ -454,7 +455,60 @@ class CropAgent(Agent):
         self.growth_stage = growth_stage  # default stage -> mature for originally located crops
         self.crop_timer = 0       #timer for advancing crop age 
         self.growth_stages = ["seed", "immature", "mature"]      # crop stages 
+        self.color = self.get_color()       
         
+    
+
+    def get_color(self):
+        """ Return the right color of stage to the crop"""
+        if self.growth_stage == "seed":
+            return "gray"
+        elif self.growth_stage == "immature":
+            return "yellow"
+        elif self.growth_stage == "mature":
+            return "red"
+        
+    
+
+    def reset_crop_stage(self):
+        """ Reset the crop to its seed stage """
+        #if self.growth_stage == "mature": 
+        self.growth_stage = "seed"
+        self.crop_timer = 0 
+        self.color = self.get_color()   # update color 
+        print (f"Crop at {self.pos} has been reset to seed stage with color {self.color} .")
+
+
+
+    def step(self):
+        """Advance the crop's growth stage based on the timer"""
+        self.crop_timer += 1
+
+        if self.growth_stage == "seed" and self.crop_timer>=35:
+            self.growth_stage = "immature"     # = error lol
+            self.color = self.get_color()    # update color
+            self.crop_timer = 0 
+            print(f"Crop at {self.pos} transitioned from seed to immature with color{self.color}.")
+
+
+        elif self.growth_stage == "immature" and self.crop_timer >= 50:
+            self.growth_stage = "mature"
+            self.color = self.get_color()    #update color 
+            self.crop_timer = 0 
+            print(f"Crop at {self.pos} transitioned from immature to mature stage with color {self.color}.") 
+
+
+
+    
+
+
+    
+        
+
+    
+
+######## crop aging test ends here #########
+
 
 
 class PathAgent(Agent):
