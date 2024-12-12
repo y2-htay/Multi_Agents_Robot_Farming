@@ -120,10 +120,6 @@ def crop_portrayal(crop):
     }
 
 
-
-
-
-
 def path_portrayal(path):
     """
     Portrayal for PathAgent.

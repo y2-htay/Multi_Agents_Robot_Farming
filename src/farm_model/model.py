@@ -33,9 +33,6 @@ class FarmModel(Model):
         #   do this setup
 
 
-        
-
-
 #############################################################
            ### Terrain Coordinates Definition 
 #############################################################
@@ -420,19 +417,24 @@ class FarmModel(Model):
            ### Classes for terrains 
 #############################################################
 
-
-class WaterAgent(Agent):   #an agent representing a tree on the grid 
+class BaseTerrains(Agent):
     def __init__(self, _id, pos, model):
         super().__init__( _id, model)
-        self.type = "water"
         self.pos = pos
 
 
-class TreeAgent(Agent):
+class WaterAgent(BaseTerrains):   #an agent representing a tree on the grid 
+    def __init__(self, _id, pos, model):
+        super().__init__( _id, pos, model)
+        #self.type = "water"
+        #self.pos = pos
+
+
+class TreeAgent(BaseTerrains):
     def __init__(self, _id ,pos,  model):
-        super().__init__(_id, model)
-        self.type = "tree"
-        self.pos = pos
+        super().__init__(_id, pos, model)
+        #self.type = "tree"
+        #self.pos = pos
 
 
 # class CropAgent(Agent):
@@ -447,11 +449,11 @@ class TreeAgent(Agent):
 #####################
 
 
-class CropAgent(Agent):
+class CropAgent(BaseTerrains):
     def __init__(self,  _id, pos, model, growth_stage = "mature"):
-        super().__init__( _id, model)    #pos not needed to be passed 
-        self.type = "crop"
-        self.pos = pos
+        super().__init__( _id,pos,  model)    #pos not needed to be passed 
+        #self.type = "crop"
+        #self.pos = pos
         self.growth_stage = growth_stage  # default stage -> mature for originally located crops
         self.crop_timer = 0       #timer for advancing crop age 
         self.growth_stages = ["seed", "immature", "mature"]      # crop stages 
@@ -511,18 +513,18 @@ class CropAgent(Agent):
 
 
 
-class PathAgent(Agent):
+class PathAgent(BaseTerrains):
     def __init__(self, _id, pos, model):
-        super().__init__( _id, model)
-        self.type = "path"
-        self. pos = pos 
+        super().__init__( _id,pos,  model)
+        #self.type = "path"
+        #self. pos = pos 
         
 
-class BaseAgent(Agent):
+class BaseAgent(BaseTerrains):
     def __init__(self,  _id, pos, model):
-        super(). __init__( _id, model)
-        self.type = "base"
-        self.pos = pos
+        super(). __init__( _id, pos, model)
+        #self.type = "base"
+        #self.pos = pos
         
         
         
@@ -572,8 +574,7 @@ def step(self):
         #     raise ValueError(f"Unknown mode: {self.mode}")
         
         
-        
-        
+
         
 
     
