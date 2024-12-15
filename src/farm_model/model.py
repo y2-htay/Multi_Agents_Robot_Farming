@@ -501,14 +501,6 @@ class CropAgent(BaseTerrains):
 
 
 
-    
-
-
-    
-        
-
-    
-
 ######## crop aging test ends here #########
 
 
