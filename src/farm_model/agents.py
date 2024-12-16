@@ -347,7 +347,7 @@ BUSY = 0         #picker
 
 
 ############################################################
-    ##### Drones Classsss for signal test-working   crop aging working 
+    ##### Drones Classsss (signal + aging ) Extended , Basic 
 #############################################################
 
 
@@ -400,67 +400,17 @@ class DroneRobot(Agent):
     ######################################
 
 
-#     @property 
-#     def is_busy(self):
-#         return self.state == BUSY
+    @property 
+    def is_busy(self):
+        return self.state == BUSY
 
 
 
 
     ######################################
-    ### Step Function (Drone)
+    ### Step Function (Drone) Extended 
     ######################################
 
-
-    # def step(self):
-    #     """
-    #     Define the behavior of drones at each step.
-    #     """
-    #     print(f"DroneRobot {self.unique_id} at position {self.pos} with battery {self.battery}")
-
-    #     # Decrease battery over time
-    #     self.battery_tick += 1
-    #     if self.battery_tick >= 50:  # Adjust this threshold as needed
-    #         self.battery_tick = 0
-    #         self.battery -= 1
-
-    #     # Return to base if battery is low
-    #     if self.battery <= 20:
-    #         print(f"Drone {self.unique_id} has low battery and is returning to base.")
-    #         self.return_to_base()
-    #         return
-
-    #     # If waiting for a picker to arrive, don't move
-    #     if self.state == "waiting":
-    #         print(f"Drone {self.unique_id} is waiting for a picker {self.picker_id_waiting} at {self.pos}.")
-    #         if not self.check_for_crop():
-    #             self.state = 'searching'
-    #         # Check if a picker has arrived
-    #         if any(isinstance(agent, PickerRobot) and agent.pos == self.pos for agent in self.model.grid.get_cell_list_contents(self.pos)):
-    #             print(f"Picker has arrived at {self.pos}. Drone {self.unique_id} will resume searching.")
-    #             self.state = "searching"
-    #         return
-
-    #     # Look for crops
-    #     if self.check_for_crop():
-    #         print(f"Drone {self.unique_id} found a crop at {self.pos}. Signaling picker.")
-    #         self.signal_picker()
-    #         print(f"Drone going to signal picker ")
-    #         self.state = "waiting"
-    #         return
-
-    #     # Move randomly if no crop is found
-    #     self.move_randomly()
-
-
-    #     #update position and heading dynamically (optional for dynamic arrowhead)
-    #     self.arrow_step()
-        
-
-    ######################################
-    ### Step Function (Drone) - test for reach pick 
-    ######################################
-    
 
     def step(self):
         """
@@ -490,61 +440,25 @@ class DroneRobot(Agent):
                 print(f"Picker has arrived at {self.pos}. Drone {self.unique_id} will resume searching.")
                 self.state = "searching"
             return
-        
 
-        self.signaled_crop_pos = None  # Add this in the drone's initialization
-
+        # Look for crops
         if self.check_for_crop():
-            if self.signaled_crop_pos == self.pos:
-                print(f"Drone {self.unique_id} has already signaled a picker for crop at {self.pos}.")
-            else:
-                print(f"Drone {self.unique_id} found a new crop at {self.pos}. Signaling picker.")
-                self.signal_picker()
-                self.signaled_crop_pos = self.pos
-                self.state = "waiting"
-                return
+            print(f"Drone {self.unique_id} found a crop at {self.pos}. Signaling picker.")
+            self.signal_picker()
+            print(f"Drone going to signal picker ")
+            self.state = "waiting"
+            return
+
+        # Move randomly if no crop is found
+        self.move_randomly()
 
 
-
-
-
-# ### drone work flow 
-#    check battery 
-# if <= 20 , return to base and stop further action 
-
-#  if drone is waiting 
-# if waiting for pick --
-# check if no crop at pos, then switch to searching 
-# if picker arrived, switch to searching 
-    
-# check for crops at current pos
-#     if crop found,  signal picker,  and switch to waiting 
-
-
-# if none of above , move randomly 
+        #update position and heading dynamically (optional for dynamic arrowhead)
+        self.arrow_step()
         
-        
-        
-        
-    # ## change here to check the mature crop 
-    # def check_for_crop(self):
-    #     """
-    #     Check if the current cell contains a CropAgent (strawberries).
-    #     """
-    #     from model import CropAgent  # Avoid circular import
-    #     for agent in self.model.grid.get_cell_list_contents(self.pos):
-    #         if isinstance(agent, CropAgent):
-    #             print(f"DroneRobot {self.unique_id} found a crop at {self.pos}")
-    #             return True
-    #     return False
-
-
-
- ##------ test for crop---------------------------------------------------------
-
 
     ######################################
-    ### Check for crop ( Drone )
+    ### Check for crop ( Drone ) 
     ######################################
 
 
@@ -557,12 +471,10 @@ class DroneRobot(Agent):
                 return True
         return False
 
-    ### -----------------------------------------------------------------------
-    
 
 
     ######################################
-    ### Signal Picker (Drone)
+    ### Signal Picker (Drone) Extended 
     ######################################
 
 
@@ -593,41 +505,17 @@ class DroneRobot(Agent):
             pickers_to_signal, key=lambda picker: manhattan_distance(self.pos, picker.pos)
         )
 
-        # # Assign crop location to the nearest picker
-        # nearest_picker.target_pos = self.pos  # change here with the reach, cant overlap on the tree grid
-        # nearest_picker.state = "moving_to_crop"   
-        # self.picker_id_waiting = nearest_picker.unique_id
-        # print(f"Drone {self.unique_id} signaled Picker {nearest_picker.unique_id} to move to {self.pos}.")
+        # Assign crop location to the nearest picker
+        nearest_picker.target_pos = self.pos  # change here with the reach, cant overlap on the tree grid
+        nearest_picker.state = "moving_to_crop"   
+        self.picker_id_waiting = nearest_picker.unique_id
+        print(f"Drone {self.unique_id} signaled Picker {nearest_picker.unique_id} to move to {self.pos}.")
 
-        #####################
-        ## test for pick from reach, not assigning current positio as their target.pos 
-        #####################
 
-        # Find all reachable positions around the crop position (drone's position)
-        from model import TreeAgent
-        reachable_positions = [
-           (x, y) for x in range(self.pos[0] - 1, self.pos[0] + 2)
-           for y in range(self.pos[1] - 1, self.pos[1] + 2)
-           if 0 <= x < self.model.grid.width and 0 <= y < self.model.grid.height
-           and not any(isinstance(agent, TreeAgent) for agent in self.model.grid.get_cell_list_contents((x, y)))
-           and (x, y) != self.pos  # Exclude the drone's current position
-       ]
-
-        if reachable_positions:
-           # Assign the nearest reachable position as the target
-           target_position = min(
-               reachable_positions, key=lambda pos: manhattan_distance(nearest_picker.pos, pos)
-           )
-           nearest_picker.target_pos = target_position
-           nearest_picker.state = "moving_to_crop"
-           self.picker_id_waiting = nearest_picker.unique_id
-           print(f"Drone {self.unique_id} signaled Picker {nearest_picker.unique_id} to move to {target_position}.")
-        else:
-           print(f"Drone {self.unique_id} found no reachable position for Picker {nearest_picker.unique_id}.")     
 
 
         #####################################
-           ### Move Randomly function (Drones)
+           ### Move Randomly function (Drones) Basic + Extended 
         ######################################
     
     def move_randomly(self):
@@ -645,7 +533,7 @@ class DroneRobot(Agent):
 
 
         ######################################
-           ### Return to bsae Function (Drones) Working 
+           ### Return to bsae Function (Drones) Basic + Extended 
         ######################################
         
     def return_to_base(self):
@@ -676,18 +564,6 @@ class DroneRobot(Agent):
             self.model.grid.move_agent(self, next_position)
 
 
-    #### Adding utility function for drones to move toward the target 
-
-    ### utility function to calculate the distance 
-    # def calculate_distance(pos1, pos2):
-    #     """Calculate Manhattan distance between two points."""
-    #     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
-    
-
-
-
-    
-
 ##############################################################################################################
 
 
@@ -712,12 +588,12 @@ class PickerRobot(Agent):
         self.capacity = 1000
         self.battery = 100
         self.battery_tick = 0
-#        self.type = "picker_robot"
-#        self.target_crop = None  # Crop location to move toward target crop
+        self.type = "picker_robot"
+        self.target_crop = None  # Crop location to move toward target crop
 
 
 #############################################################
-           ### Reach - Property (picker ) - From Basic
+           ### Reach - Property (picker ) - From Basic 
 #############################################################
 
 
@@ -739,9 +615,9 @@ class PickerRobot(Agent):
            ### is_busy - Property (picker ) - From Basic
 #############################################################
 
-#     @property 
-#     def is_busy(self):
-#         return self.state == BUSY
+    @property 
+    def is_busy(self):
+        return self.state == BUSY
 
 
 
@@ -750,131 +626,46 @@ class PickerRobot(Agent):
            ### Step function (picker ) - Extended ( with signalling )
 #############################################################
 
-    # def step(self):
-    #     """
-    #     Define the behavior of pickers at each step.
-    #     """
-    #     print(f"PickerRobot {self.unique_id} at position {self.pos} with storage {self.storage} and battery {self.battery}")
-
-    #     # Decrease battery over time
-    #     self.battery_tick += 1
-    #     if self.battery_tick >= 50:  # Adjust this threshold as needed
-    #         self.battery_tick = 0
-    #         self.battery -= 1
-
-    #     # Return to base if battery is low or storage is full
-    #     if self.battery <= 20 or self.storage >= self.capacity:
-    #         print(f"Picker {self.unique_id} is returning to base (battery or storage issue).")
-    #         self.return_to_base()
-    #         return
-
-    #     # If moving to a signaled crop
-    #     if self.state == "moving_to_crop":    #moving_to_crop - move_towared_target() 
-    #         print(f"Picker {self.unique_id} is moving to a crop at {self.target_pos}.")
-    #         if self.pos == self.target_pos:
-    #             print(f"Picker {self.unique_id} has arrived at {self.target_pos}. Starting to pick.")
-    #             self.state = "picking"    #pick()
-    #         else:
-    #             self.move_towards(self.target_pos)  # Move towards the target crop
-    #             return      ############## one picker following the first one 
-
-    #     # Picking crops
-    #     if self.state == "picking":     #picking - pick()
-    #         print(f"Picker {self.unique_id} is picking crops.")
-    #         self.pick()
-    #         if self.storage >= self.capacity:  # Return to base if full
-    #             print(f"Picker {self.unique_id} is full. Returning to base.")
-    #             self.state = "returning"  #returning - return_to_base()
-    #         return
-
-    #     # Default state: waiting for a signal at the base
-    #     if self.state == "waiting":   # waiting - wait()
-    #         print(f"Picker {self.unique_id} is waiting at the base.")
-
-
-#############################################################
-           ### Step function (picker ) - Extended ( with signalling ) - testing for pick from reach 
-#############################################################
-
     def step(self):
-     """
-     Define the behavior of pickers at each step.
-     """
-     print(f"PickerRobot {self.unique_id} at position {self.pos} with storage {self.storage} and battery {self.battery}")
+        """
+        Define the behavior of pickers at each step.
+        """
+        print(f"PickerRobot {self.unique_id} at position {self.pos} with storage {self.storage} and battery {self.battery}")
 
-     # Decrease battery over time
-     self.battery_tick += 1
-     if self.battery_tick >= 50:  # Adjust this threshold as needed
-         self.battery_tick = 0
-         self.battery -= 1
+        # Decrease battery over time
+        self.battery_tick += 1
+        if self.battery_tick >= 50:  # Adjust this threshold as needed
+            self.battery_tick = 0
+            self.battery -= 1
 
-     # Return to base if battery is low or storage is full
-     if self.battery <= 20 or self.storage >= self.capacity:
-         print(f"Picker {self.unique_id} is returning to base (battery or storage issue).")
-         self.return_to_base()
-         return
+        # Return to base if battery is low or storage is full
+        if self.battery <= 20 or self.storage >= self.capacity:
+            print(f"Picker {self.unique_id} is returning to base (battery or storage issue).")
+            self.return_to_base()
+            return
 
-     # If moving to a signaled crop
-     if self.state == "moving_to_crop":
-         print(f"Picker {self.unique_id} is moving to a crop at {self.target_pos}.")
-         # Check if the picker is within reach of the crop
-         if self.target_pos and self.pos in self.Reach:
-             print(f"Picker {self.unique_id} reached the crop within reach. Starting to pick.")
-             self.state = "picking"  # Transition to picking state
-         else:
-             self.move_towards(self.target_pos)  # Move towards the closest reachable grid
-         return
+        # If moving to a signaled crop
+        if self.state == "moving_to_crop":    #moving_to_crop - move_towared_target() 
+            print(f"Picker {self.unique_id} is moving to a crop at {self.target_pos}.")
+            if self.pos == self.target_pos:
+                print(f"Picker {self.unique_id} has arrived at {self.target_pos}. Starting to pick.")
+                self.state = "picking"    #pick()
+            else:
+                self.move_towards(self.target_pos)  # Move towards the target crop
+                return      ############## one picker following the first one 
 
-     # Picking crops
-     if self.state == "picking":
-         print(f"Picker {self.unique_id} is picking crops.")
-         self.pick()  # Perform the picking operation
-         if self.storage >= self.capacity:  # Return to base if full
-             print(f"Picker {self.unique_id} is full. Returning to base.")
-             self.state = "returning"
-         else:
-             self.state = "waiting"  # Transition to waiting state after picking
-         return
+        # Picking crops
+        if self.state == "picking":     #picking - pick()
+            print(f"Picker {self.unique_id} is picking crops.")
+            self.pick()
+            if self.storage >= self.capacity:  # Return to base if full
+                print(f"Picker {self.unique_id} is full. Returning to base.")
+                self.state = "returning"  #returning - return_to_base()
+            return
 
-     # Default state: waiting for a signal at the base
-     if self.state == "waiting":
-         print(f"Picker {self.unique_id} is waiting at the base.")
-
-
-
-
-
-
-
-
-
-#############################################################
-           ### step function (picker ) - basic- without signalling 
-#############################################################
-    
-#     def step(self):
-#         """ 
-#         Define the behaviour of the robot at each step 
-#         """
-#         print(f"PickerRobot {self.unique_id} is stepping at position {self.pos}.")
-#         print("battery for ", self.unique_id, " = ", self.battery)
-#         print("Storage for", self.unique_id, "=", self.storage)
-
-        
-#         #decrease battery level every few ticks 
-#         self.battery_tick += 1
-        
-#         if self.battery_tick == BATTERY_SKIP_THRESHOLD:
-#             self.battery_tick = 0
-#             self.battery -= 1
-            
-        
-#         print(f"PickerRobot {self.unique_id} is taking a step at position {self.pos}.") #debug
-#         #Decision making 
-#         action = self.make_decision()
-#         print(f"PickerRobot {self.unique_id} decided to : {action }")     #debug print for the visual movement of pickerrobot 
-#         getattr(self,action)()        #execuse the chosen action 
-
+        # Default state: waiting for a signal at the base
+        if self.state == "waiting":   # waiting - wait()
+            print(f"Picker {self.unique_id} is waiting at the base.")
 
 
 #############################################################
@@ -917,112 +708,29 @@ class PickerRobot(Agent):
 
 
 
-# #############################################################
-#            ### Pick (Picker) - Extended - Need to fix - to pick from reach
-# #############################################################
+#############################################################
+           ### Pick (Picker) - Extended - (aging)
+#############################################################
 
-#     ##  double check here if the grid has  a mature crop and replace it with seed after picking 
-#     def pick(self):
-#         """
-#         Pick crops at the current position.
-#         """
-#         from model import CropAgent
-#         for agent in self.model.grid.get_cell_list_contents(self.pos):
-#             if isinstance(agent, CropAgent) and agent.growth_stage == "mature":
-#                print(f"Picker {self.unique_id} picked a crop at {self.pos}. Resetting to seed stage")
-#                agent.reset_crop_stage()  # changed here 
-#                self.storage += 1      #reset to seed stage
-#                self.stage = "waiting"     # return to waiting state after picking
-#             else:
-#                 self.state = "waiting"  # this is the problem, dont forget this 
+    ##  double check here if the grid has  a mature crop and replace it with seed after picking 
+    def pick(self):
+        """
+        Pick crops at the current position.
+        """
+        from model import CropAgent
+        for agent in self.model.grid.get_cell_list_contents(self.pos):
+            if isinstance(agent, CropAgent) and agent.growth_stage == "mature":
+               print(f"Picker {self.unique_id} picked a crop at {self.pos}. Resetting to seed stage")
+               agent.reset_crop_stage()  # changed here 
+               self.storage += 1      #reset to seed stage
+               self.stage = "waiting"     # return to waiting state after picking
+            else:
+                self.state = "waiting"  # this is the problem, dont forget this 
             
 
 # # self.state = "waiting"
 # #             else:
 # #                 self.state = "waiting"
-
-
-
-#############################################################
-           ### Pick (Picker) - Extended 
-#############################################################
-
-    # ##  double check here if the grid has  a mature crop and replace it with seed after picking 
-    # def pick(self):
-    #     """
-    #     Pick crops at the current position.
-    #     """
-    #     from model import CropAgent
-    #     reachable = self.Reach
-    #     print("reachable", reachable)
-    #     for agent in self.model.grid.get_cell_list_contents(self.pos):
-    #         if isinstance(agent, CropAgent) and agent.growth_stage == "mature":
-    #            print(f"Picker {self.unique_id} picked a crop at {self.pos}. Resetting to seed stage")
-    #            agent.reset_crop_stage()  # changed here 
-    #            self.storage += 1      #reset to seed stage
-    #            self.stage = "waiting"     # return to waiting state after picking
-    #         else:
-    #             self.state = "waiting"  # this is the problem, dont forget this 
-
-
-
-#############################################################
-           ### Pick (Picker) - Extended - Still fixing - to pick from reach - test
-#############################################################
-
-    def pick(self):
-      """
-      Pick the crop if it is within the picker's reach.
-      """
-      print(f"Picker at the nearest place of crop, ready to pick")
-      from model import CropAgent
-
-      # Check all positions in reach for mature crops
-      for pos in self.Reach:
-          for agent in self.model.grid.get_cell_list_contents(pos):
-            if isinstance(agent, CropAgent) and agent.growth_stage == "mature":
-                print(f"Picker {self.unique_id} picked a crop at {pos}. Resetting to seed stage.")
-                agent.reset_crop_stage()  # Reset the crop to the seed stage
-                self.storage += 1
-                self.state = "waiting"  # Return to waiting state after picking
-                return
-
-      # If no crop is found in reach, continue moving toward the target
-      print(f"Picker {self.unique_id} found no crop in reach.")
-      self.state = "moving_to_crop"
-
-
-
-
-
-# #############################################################
-#            ### Pick( Picker ) - Basic 
-# #############################################################
-    
-            
-#     def pick(self):
-#         """ 
-#         Pick the strawberry if one is in the current cell
-#         """
-#         print(f"Hey I am ready to pickkkkkkkkkk the strawberry ")
-#         from model import CropAgent     #imported locally 
-        
-#         reachable = self.Reach
-        
-#         print("reachable", reachable)
-        
-#         for each in self.Reach:
-#             print("Checking, ", each)
-            
-#             for agent in self.model.grid.get_cell_list_contents(each):
-#                 if isinstance(agent, CropAgent):
-#                     print(f"PickerRobot {self.unique_id} found a strawberry at {each}")
-#                     self.model.grid.remove_agent(agent)
-#                     self.model.schedule.remove(agent)
-#                     self.storage += 1
-#                     print("successfully picked at: ", each, "  Storage: ", self.storage)
-#                     continue
-#                 print("Not a crop")
 
 
 
@@ -1066,113 +774,8 @@ class PickerRobot(Agent):
     
 
 
-
 #############################################################
-           ### Make Decison (picker) - ( Basic ) - Without signalling 
-#############################################################
-  
-#     def make_decision(self):
-#       """
-#       Decide the next action based on the robot's state and surroundings.
-#       """
-#       print(f"PickerRobot {self.unique_id} is making a decision.")
-#       from model import CropAgent
-
-#       # If the battery is depleted, return to base
-#       if self.battery <= 20:
-#           print(f"PickerRobot {self.unique_id} battery died. Returning to base.")
-#           self.state = "returning"  # added states
-#           return "return_to_base"   # return to base instead of wait 
-
-#       # If storage is full, transition to "returning" state and return to base
-#       if self.storage >= 100:
-#           print(f"PickerRobot {self.unique_id} storage is full. Returning to base.")
-#           self.state = "returning"  ## added states 
-#           return "return_to_base"   ## return to base instead of wait 
-
-#       # If in "returning" state, continue heading back to the base, confirming it to go to base 
-#       if self.state == "returning":
-#           return "return_to_base"
-
-#       # If free, check for nearby crops
-#       if self.state == FREE:
-#           crop_nearby = any(
-#             isinstance(agent, CropAgent)
-#             for agent in self.model.grid.get_neighbors(self.pos, moore=True, include_center=False, radius=3)
-#         )
-#           print(f"PickerRobot {self.unique_id} Crop Nearby: {crop_nearby}")
-#           if crop_nearby:
-#               return "pick"
-#           else:
-#               return "move_randomly"
-
-#       # Default fallback
-#       return "wait"
-
-
-
-
-    # ###work flow 
-    # check battery  , low-> return to base 
-    # check storage, full -> return to base 
-    # if waiting > wait
-    # if moving (moving to crop) 
-    # > if reach to target,  switch to picking 
-    # > otherwise, move to target 
-    # if picking crops > continue picking
-    # if returning (returning to base ) > decide to return to base 
-    # default action>  if none of above, just wait
-
-
-
-#############################################################
-           ### Move Randomly function (picker) - Only Basic
-#############################################################
-
-    def move_randomly(self):    # responbile for moving the robot 
-        """ 
-        Move the robot to a random neighboring cell, avoiding trees , Reduce speed when moving through water
-        """
-        from model import TreeAgent, WaterAgent   
-        #from model import CropAgent
-        # imported locally only before they are called / if imported globally at the top, it is circulr dependency with model.py
-
-        # slowing down for moving through water
-        if hasattr(self, 'slowdown_counter') and self.slowdown_counter > 0 :
-            print(f"PickerRobot {self.unique_id} is slowing down near the water")
-            self.slowdown_counter -= 1 
-            return   # skip  this step 
-
-
-        possible_steps = self.model.grid.get_neighborhood(
-            self.pos, moore = True, include_center=False
-        )
-        valid_steps = [ step for step in possible_steps if not any(isinstance (a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))] 
-        # valid_steps = [ 
-        #     step for step in possible_steps
-        # #     if self.model.grid.is_cell_empty(step)   #check if the cell is empty 
-        # #     and not any(isinstance(a,TreeAgent) for a in self.model.grid.get_cell_list_contents(step))     #avoid trees
-        #        ##instead of checking ...... 
-        #     if not any(isinstance(a, TreeAgent) for a in self.model.grid.get_cell_list_contents(step))
-        # ]
-        print(f"PickerRobot {self.unique_id} valid steps: {valid_steps}")    # debugging 
-        if valid_steps:
-            #move to a randomly chosen valid step 
-            new_position = self.random.choice(valid_steps)
-            print(f"PickerRobot {self.unique_id} moving from {self.pos} to {new_position}.")
-
-
-            #slowing down moving through river 
-            if any(isinstance (a, WaterAgent) for a in self.model.grid.get_cell_list_contents(new_position)):
-                print ("Picker Robot {self.unique_id} entering water at {self.position}.")
-                self.slowdown_counter = 5     #slow down for 5 steps 
-            self.model.grid.move_agent(self, new_position)
-            print(f"PickerRobot {self.unique_id} moved to {new_position}")     #debug 
-
-
-
-#############################################################
-           ### Return To Base (picker) 
+           ### Return To Base (picker) Basic + Extended 
 #############################################################  
 
 
@@ -1234,7 +837,7 @@ class PickerRobot(Agent):
 
 
 #############################################################
-           ### Wait function (picker) - Same - for - Basic and Extended 
+           ### Wait function (picker) - Basic + Extended 
 #############################################################
 
     def wait(self):
@@ -1250,84 +853,25 @@ class PickerRobot(Agent):
 #############################################################
 
 
-    # def move_towards(self, target_pos):    # target pos,(called in picker step)
-    #     """
-    #     Move towards the target position.
-    #     """
-    #     current_x, current_y = self.pos
-    #     target_x, target_y = target_pos
+    def move_towards(self, target_pos):    # target pos,(called in picker step)
+        """
+        Move towards the target position.
+        """
+        current_x, current_y = self.pos
+        target_x, target_y = target_pos
 
-    #     # Calculate the direction
-    #     dx = target_x - current_x
-    #     dy = target_y - current_y
-    #     move_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0)
-    #     move_y = current_y + (1 if dy > 0 else -1 if dy < 0 else 0)
-    #     next_pos = (move_x, move_y)
+        # Calculate the direction
+        dx = target_x - current_x
+        dy = target_y - current_y
+        move_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0)
+        move_y = current_y + (1 if dy > 0 else -1 if dy < 0 else 0)
+        next_pos = (move_x, move_y)
 
-    #     # Move to the next position
-    #     # if self.model.grid.is_cell_empty(next_pos):
-    #     self.model.grid.move_agent(self, next_pos)
-    #     print(f"{self.unique_id} moved to {next_pos}.")   #next.pos -> only for calculations
+        # Move to the next position
+        # if self.model.grid.is_cell_empty(next_pos):
+        self.model.grid.move_agent(self, next_pos)
+        print(f"{self.unique_id} moved to {next_pos}.")   #next.pos -> only for calculations
 
-
-
-#     # def calculate_distance(pos1, pos2):
-#     #     """Calculate Manhattan distance between two points."""
-#     #     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
-
-
-
-
-#############################################################
-           ### Move Towards Crop (picker) - Extended - test for reach pick
-#############################################################
-
-    
-    def move_towards(self, target_pos):
-     """
-     Move toward the closest accessible grid near the target crop.
-     """
-     from model import TreeAgent
-
-     # Get all reachable positions around the target crop
-     reachable_positions = [
-         pos for pos in self.Reach
-         if not any(isinstance(agent, TreeAgent) for agent in self.model.grid.get_cell_list_contents(pos))
-     ]
-
-     # If no reachable positions exist, return
-     if not reachable_positions:
-         print(f"Picker {self.unique_id} cannot find a reachable position near the crop at {target_pos}.")
-         return
-
-     # Choose the closest position to the target crop
-     closest_pos = min(
-         reachable_positions, key=lambda pos: abs(pos[0] - target_pos[0]) + abs(pos[1] - target_pos[1])
-     )
-
-     # Calculate the next step toward the closest position
-     current_x, current_y = self.pos
-     target_x, target_y = closest_pos
-     dx = target_x - current_x
-     dy = target_y - current_y
-     next_x = current_x + (1 if dx > 0 else -1 if dx < 0 else 0)
-     next_y = current_y + (1 if dy > 0 else -1 if dy < 0 else 0)
-     next_position = (next_x, next_y)
-
-     # Move the picker to the next position, as long as it's not obstructed by a tree
-     if not any(isinstance(agent, TreeAgent) for agent in self.model.grid.get_cell_list_contents(next_position)):
-         self.model.grid.move_agent(self, next_position)
-         print(f"Picker {self.unique_id} moved to {next_position}.")
-     else:
-         print(f"Picker {self.unique_id} could not move to {next_position} due to a tree.")
-
-
-
-
-
-#     # def calculate_distance(pos1, pos2):
-#     #     """Calculate Manhattan distance between two points."""
-#     #     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
 
 
 #########################################################################################################################################################
