@@ -14,7 +14,7 @@ from agents import DroneRobot
 
 
 class FarmModel(Model):
-    def __init__(self, width= 29, height=25, num_robots = 2, mode = "basic"):
+    def __init__(self, width= 29, height=25, num_drones = 2, num_pickers = 2, mode = "basic", movement = "random"):
         """
         Initialize the farm model with the given width and height.
         """
@@ -24,7 +24,7 @@ class FarmModel(Model):
         self.schedule = BaseScheduler(self)  # Scheduler for agents
         self.mode = "basic"
         self.step_count = 0     # initialise step counter 
-    
+        self.movement = "random"
         
         ##for switch
         # if mode = 0 // basic
@@ -173,7 +173,7 @@ class FarmModel(Model):
 
         ###num_robots = 2
         ###Placing Drones at base
-        for i in range(num_robots):
+        for i in range(num_drones):
             if not base_coordinates:
                 print("No more available base cells for PickerRobots")
                 break
@@ -237,7 +237,7 @@ class FarmModel(Model):
 
         # #num_robots = 4
         ## placing pickers at base 
-        for i in range(num_robots):
+        for i in range(num_pickers):
             if not base_coordinates:
                 print("No more available base cells for PickerRobots")
                 break
