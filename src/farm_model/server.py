@@ -24,7 +24,7 @@ simulation_params = {
     "height": 25,
     "mode": Choice(
         'Opeartion Mode',
-        value='Default choice',
+        value='Basic',
         choices=['Basic', 'Extended']
     ),
     "num_drones": Slider(

@@ -1,7 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore", category  = FutureWarning)
-from model import WaterAgent, TreeAgent, CropAgent, PathAgent, BaseAgent, PickerRobot
-from model import DroneRobot
+from model import WaterAgent, TreeAgent, CropAgent, PathAgent, BaseAgent
+from model import PickerRobot, DroneRobot, ExtendedPicker, ExtendedDrone
 
 def farm_portrayal(agent):
     """
@@ -10,7 +10,7 @@ def farm_portrayal(agent):
     #print(f"Portraying agent: {agent} at position {getattr(agent, 'pos', None)}")  #debug
     # if isinstance(agent, PickerRobot) or isinstance(agent, DroneRobot):
     #     return robot_portrayal(agent)
-    if isinstance (agent, PickerRobot):
+    if isinstance (agent, (PickerRobot, ExtendedPicker)):
         return {
             "Shape": "circle",
             #"Color" : "white" if agent.is_busy else "orange", 
@@ -24,7 +24,7 @@ def farm_portrayal(agent):
             # "y": agent.pos[1],
             
         }
-    if isinstance(agent, DroneRobot):
+    if isinstance(agent, (DroneRobot, ExtendedDrone)):
         return drone_robot_portrayal(agent)
     elif isinstance(agent, WaterAgent):
         return water_portrayal(agent)

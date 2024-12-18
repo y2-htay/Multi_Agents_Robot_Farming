@@ -3,8 +3,8 @@ warnings.filterwarnings("ignore", category  = FutureWarning)
 from mesa import Model, Agent
 from mesa.space import MultiGrid
 from mesa.time import BaseScheduler
-from agents import PickerRobot
-from agents import DroneRobot
+from agents import PickerRobot, ExtendedPicker
+from agents import DroneRobot, ExtendedDrone
 
 
 
@@ -14,7 +14,7 @@ from agents import DroneRobot
 
 
 class FarmModel(Model):
-    def __init__(self, width= 29, height=25, num_drones = 2, num_pickers = 2, mode = "basic", movement = "random"):
+    def __init__(self, width= 29, height=25, num_drones = 2, num_pickers = 2, mode = "Basic", movement = "random"):
         """
         Initialize the farm model with the given width and height.
         """
@@ -22,7 +22,8 @@ class FarmModel(Model):
         print("Initialising FarmModel......")   #debug
         self.grid = MultiGrid(width, height, torus=False)  # Non-toroidal grid
         self.schedule = BaseScheduler(self)  # Scheduler for agents
-        self.mode = "basic"
+        #self.mode = "basic"
+        self.mode = mode
         self.step_count = 0     # initialise step counter 
         self.movement = "random"
         
@@ -117,15 +118,22 @@ class FarmModel(Model):
 
         # Add terrain agents
        # self.create_water(start_point=(6,0), end_point=(6,24))
+        print("Setting up water...")
         self.create_water(water_ranges)      #for new water coordinates loop 
+        print("Water setup complete.")
         self.create_trees(tree_ranges)
+        print("Tree setup complete.")
     # #    # self.create_crops([
     # #         (4,13), (4,14), (2, 8), (3, 8), (4, 8), (10,16), (10,17), 
     # #     ])       # for old coordinates 
         self.create_crops(crops_coordinates)     #for new coordinates   # created a list of coordinates separate instead of calling in the function 
+        print("Crop setup complete.")
+
     # #    self.create_path(start_point=(1, 0), end_point=(1, 24))    #old path coordinates
         self.create_path(path_coordinates)      #for new path coordinates;
+        print("Path setup complete.")
         self.create_base(base_coordinates)
+        print("Base setup complete.")
         
     
 
@@ -171,26 +179,26 @@ class FarmModel(Model):
         ########################################
 
 
-        ###num_robots = 2
-        ###Placing Drones at base
-        for i in range(num_drones):
-            if not base_coordinates:
-                print("No more available base cells for PickerRobots")
-                break
+        # ###num_robots = 2
+        # ###Placing Drones at base
+        # for i in range(num_drones):
+        #     if not base_coordinates:
+        #         print("No more available base cells for PickerRobots")
+        #         break
 
-            #Randomly select a base cell 
-            x, y = self.random.choice(base_coordinates)
+        #     #Randomly select a base cell 
+        #     x, y = self.random.choice(base_coordinates)
 
-            print(f"Placing Drones at base Cell ({x}, {y})")    # debug
+        #     print(f"Placing Drones at base Cell ({x}, {y})")    # debug
             
-            # drone = 0
-            # if bla
-            #   var = 4
-            # 
-            # print(var)
-            drone_robot = DroneRobot(self.next_id(), (x,y), self)
-            self.grid.place_agent(drone_robot, (x,y))
-            self.schedule.add(drone_robot)
+        #     # drone = 0
+        #     # if bla
+        #     #   var = 4
+        #     # 
+        #     # print(var)
+        #     drone_robot = DroneRobot(self.next_id(), (x,y), self)
+        #     self.grid.place_agent(drone_robot, (x,y))
+        #     self.schedule.add(drone_robot)
 
 
             # ###remove selected coordinates to prevent duplicate placement 
@@ -235,40 +243,128 @@ class FarmModel(Model):
 
 
 
-        # #num_robots = 4
-        ## placing pickers at base 
-        for i in range(num_pickers):
-            if not base_coordinates:
-                print("No more available base cells for PickerRobots")
-                break
+        # # #num_robots = 4
+        # ## placing pickers at base 
+        # for i in range(num_pickers):
+        #     if not base_coordinates:
+        #         print("No more available base cells for PickerRobots")
+        #         break
 
-            #Randomly select a base cell 
-            x, y = self.random.choice(base_coordinates)
+        #     #Randomly select a base cell 
+        #     x, y = self.random.choice(base_coordinates)
 
-            print(f"Placing PickerRobot at base Cell ({x}, {y})")    # debug
-            picker_robot = PickerRobot(self.next_id(), (x,y), self)    # change the mode here, if mode == extended 
+        #     print(f"Placing PickerRobot at base Cell ({x}, {y})")    # debug
+        #     picker_robot = PickerRobot(self.next_id(), (x,y), self)    # change the mode here, if mode == extended 
 
-            ## change the robot based on mode 
-            # if mode == 'basic':
-            #     picker_robot = PickerRobot(self.next_id(), (x,y), self) 
-            # elif mode == 'extended':
-            #     picker_robot = ExtendedPickerRobot(self.next_id(), (x,y), self) 
+        #     ## change the robot based on mode 
+        #     # if mode == 'basic':
+        #     #     picker_robot = PickerRobot(self.next_id(), (x,y), self) 
+        #     # elif mode == 'extended':
+        #     #     picker_robot = ExtendedPickerRobot(self.next_id(), (x,y), self) 
             
-            self.grid.place_agent(picker_robot, (x,y))
-            self.schedule.add(picker_robot)
+        #     self.grid.place_agent(picker_robot, (x,y))
+        #     self.schedule.add(picker_robot)
 
 
             # ###remove selected coordinates to prevent duplicate placement 
             # base_coordinates.remove((x,y))
 
 
+##########################################################
+  #### Call the appropriate robot placement method based on the mode
+##########################################################
 
 
-        
+        if self.mode == "Basic":
+            print("Starting basic robot placement...")
+            self.basic_robot_placement(num_drones, num_pickers)
+        elif self.mode == "Extended":
+            print("Starting extended robot placement...")
+            self.extended_robot_placement(num_drones, num_pickers)
+        else:
+            raise ValueError(f"Unknown mode: {self.mode}")
 
 
-        
+###########################################################
+######  Basic Mode Drone and Picker Placement 
+###########################################################
+
+
+    def basic_robot_placement(self, num_drones, num_pickers):
+        print("Starting basic robot placement...")
+
+        """Place drones and pickers randomly on the grid."""
+
+
+        for i in range(num_drones):
+            print(f"Attempting to place DroneRobot {i}...")
+            x = self.random.randint(0, self.grid.width - 1)
+            y = self.random.randint(0, self.grid.height - 1)
+            drone_robot = DroneRobot(self.next_id(), (x, y), self)
+            self.grid.place_agent(drone_robot, (x, y))
+            self.schedule.add(drone_robot)
+            print(f"DroneRobot {i} placed at {(x, y)}.")
+
+
+
+
+            #Placing pickers ranomly -- For basic operation    #difference to last one working with battery 
+        #robot placement anywhere apart from water and tree grids   ## works works works this one works 
+        for i in range(num_pickers):
+            while True:
+                x = self.random.randint(0, self.grid.width - 1)
+                y = self.random.randint(0, self.grid.height - 1)
+
+                # Get contents of the cell
+                contents = self.grid.get_cell_list_contents((x, y))
+
+                # Check conditions
+                has_tree_or_water = any(isinstance(agent, (TreeAgent, WaterAgent)) for agent in contents)
+                is_valid_cell = any(isinstance(agent, (PathAgent, BaseAgent)) for agent in contents)
+
+                if not has_tree_or_water and is_valid_cell:
+                  print(f"Placing PickerRobot at ({x}, {y})")  # Debug
+                  picker_robot = PickerRobot(self.next_id(), (x, y), self)
+                  self.grid.place_agent(picker_robot, (x, y))
+                  self.schedule.add(picker_robot)
+                  break  # Exit loop after successfully placing
+                else:
+                  print(f"Invalid cell for PickerRobot at ({x}, {y}), retrying...")  # Debug
+
+
+
+###########################################################
+###### Extended Mode Drone and Picker Placement 
+###########################################################
+
+
+
+    base_coordinates = [
+        (0, 0), (0, 1), (1, 0), (1, 1), (2,0),(2,1)
+    ]
+
+    def extended_robot_placement(self, num_drones, num_pickers):
+            print("Extended Robots  placed.")
+            """Place drones and pickers at the base."""
+            for i in range(num_drones):
+                if not self.base_coordinates:
+                    print("No more available base cells for drones.")
+                    break
+                x, y = self.random.choice(self.base_coordinates)
+                drone_robot = ExtendedDrone(self.next_id(), (x, y), self)
+                self.grid.place_agent(drone_robot, (x, y))
+                self.schedule.add(drone_robot)
+
+            for i in range(num_pickers):
+                if not self.base_coordinates:
+                    print("No more available base cells for pickers.")
+                    break
+                x, y = self.random.choice(self.base_coordinates)
+                picker_robot = ExtendedPicker(self.next_id(), (x, y), self)
+                self.grid.place_agent(picker_robot, (x, y))
+                self.schedule.add(picker_robot)
             
+
 
 #############################################################
            ##Functions for Terrains
