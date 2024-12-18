@@ -292,15 +292,16 @@ class PickerRobot(Agent):
 
 
 
+
 #############################################################
-           ### Step function (picker ) - Extended ( with signalling )
+           ### Step function (picker ) - Extended ( with signalling )  working - stepmakedecison fixed 
 #############################################################
 
     def step(self):
         """
         Define the behavior of pickers at each step.
         """
-        print(f"PickerRobot {self.unique_id} at position {self.pos} with storage {self.storage} and battery {self.battery}")
+        print(f"PickerRobot {self.unique_id} at position {self.pos} with storage {self.storage} and battery {self.battery}.")
 
         # Decrease battery over time
         self.battery_tick += 1
@@ -308,34 +309,27 @@ class PickerRobot(Agent):
             self.battery_tick = 0
             self.battery -= 1
 
-        # Return to base if battery is low or storage is full
+        # Check for battery or storage constraints
         if self.battery <= 20 or self.storage >= self.capacity:
             print(f"Picker {self.unique_id} is returning to base (battery or storage issue).")
             self.return_to_base()
             return
 
-        # If moving to a signaled crop
-        if self.state == "moving_to_crop":    #moving_to_crop - move_towared_target() 
-            print(f"Picker {self.unique_id} is moving to a crop at {self.target_pos}.")
-            if self.pos == self.target_pos:
-                print(f"Picker {self.unique_id} has arrived at {self.target_pos}. Starting to pick.")
-                self.state = "picking"    #pick()
+        # Make a decision and execute the corresponding action
+        action, arg = self.make_decision()
+        if hasattr(self, action):  # Safeguard against invalid actions
+            if arg is not None:
+                getattr(self, action)(arg)  # Call the method with an argument
             else:
-                self.move_towards(self.target_pos)  # Move towards the target crop
-                return      ############## one picker following the first one 
+                getattr(self, action)()  # Call the method without arguments
+            print(f"Picker {self.unique_id} executed: {action}.")
+        else:
+            print(f"Error: Picker {self.unique_id} does not have a valid action '{action}'.")
 
-        # Picking crops
-        if self.state == "picking":     #picking - pick()
-            print(f"Picker {self.unique_id} is picking crops.")
-            self.pick()
-            if self.storage >= self.capacity:  # Return to base if full
-                print(f"Picker {self.unique_id} is full. Returning to base.")
-                self.state = "returning"  #returning - return_to_base()
-            return
+ 
 
-        # Default state: waiting for a signal at the base
-        if self.state == "waiting":   # waiting - wait()
-            print(f"Picker {self.unique_id} is waiting at the base.")
+
+
 
 
 #############################################################
@@ -361,6 +355,71 @@ class PickerRobot(Agent):
 
 # if waiting at the base, (state -> waiting)
 #     stay idle and wait for the signal
+
+
+#############################################################
+           ### Make Decision (picker) ( Extended ) With Signalling --- working - stepmakedecison fixed 
+#############################################################
+
+    def make_decision(self):
+        """
+        Decide the next action based on the robot's state, battery, storage, and surroundings.
+        """
+        print(f"PickerRobot {self.unique_id} at position {self.pos} with storage {self.storage} and battery {self.battery}.")
+
+        # Check for battery or storage constraints first
+        if self.battery <= 20:
+            print(f"PickerRobot {self.unique_id} battery low. Returning to base.")
+            self.state = "returning"
+            return "return_to_base", None
+
+        if self.storage >= self.capacity:
+            print(f"PickerRobot {self.unique_id} storage full. Returning to base.")
+            self.state = "returning"
+            return "return_to_base", None
+
+        # Handle state transitions and decide next action
+        if self.state == "waiting":
+            print(f"PickerRobot {self.unique_id} is waiting at the base.")
+            return "wait", None
+
+        if self.state == "moving_to_crop":
+            print(f"PickerRobot {self.unique_id} is moving to a crop at {self.target_pos}.")
+            if self.pos == self.target_pos:
+                print(f"PickerRobot {self.unique_id} has arrived at {self.target_pos}. Starting to pick.")
+                self.state = "picking"
+                return "pick", None
+            else:
+                return "move_towards", self.target_pos
+
+        if self.state == "picking":
+            print(f"PickerRobot {self.unique_id} is picking crops.")
+            if self.storage < self.capacity:
+                return "pick", None
+            else:
+                print(f"PickerRobot {self.unique_id} is full. Returning to base.")
+                self.state = "returning"
+                return "return_to_base", None
+
+        if self.state == "returning":
+            print(f"PickerRobot {self.unique_id} is returning to base.")
+            return "return_to_base", None
+
+        # Default fallback action
+        print(f"PickerRobot {self.unique_id} is in an unrecognized state: {self.state}. Defaulting to 'wait'.")
+        return "wait", None
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -404,44 +463,15 @@ class PickerRobot(Agent):
 
 
 
-#############################################################
-           ### Make Decision (picker) ( Extended ) With Signalling 
-#############################################################
 
-    def make_decision(self):
-        """
-        Decide the next action based on the robot's state and surroundings.
-        """
-        if self.battery <= 20:
-            print(f"PickerRobot {self.unique_id} battery low. Returning to base.")
-            self.state = "returning"
-            return "return_to_base"
 
-        if self.storage >= self.capacity:
-            print(f"PickerRobot {self.unique_id} storage full. Returning to base.")
-            self.state = "returning"
-            return "return_to_base"
 
-        if self.state == "waiting":
-            print(f"PickerRobot {self.unique_id} is waiting at the base.")
-            return "wait"
 
-        if self.state == "moving":
-            if self.pos == self.target_crop:
-                print(f"PickerRobot {self.unique_id} reached crop at {self.pos}.")
-                self.state = "picking"
-                return "pick"
-            else:
-                return "move_toward_target"
 
-        if self.state == "picking":
-            return "pick"
 
-        if self.state == "returning":
-            return "return_to_base"
 
-        return "wait"
-    
+
+
 
 
 #############################################################
