@@ -75,6 +75,47 @@ class DroneRobot(Agent):
         return self.state == BUSY
 
 
+        ######################################
+           ### Step Function (Drones)   Basic 
+        ######################################
+
+    # def step(self):
+    #     """ 
+    #     Define the action of drones at each step 
+    #     """
+    #     print(f"DroneRobot {self.unique_id} at position {self.pos} with battery {self.battery}")
+
+        
+    #     ##Decrease battery 
+    #     self.battery_tick += 1
+
+    #     if self.battery_tick >= 50:  ## can adjust the threshold here , or use the same one as picker at the top  # 500 steps
+    #         self.battery_tick =  0
+    #         self.battery -= 1 
+
+
+    #     #stop if battery is run out 
+    #     if self.battery <= 90:
+    #         print (f"Drone {self.unique_id} has run out of battery and is stopping at {self.pos}.")
+    #         #return 
+    #         self.return_to_base()
+        
+
+
+    #     #check for crops
+    #     if self.check_for_crop():
+    #         print(f"DroneRobot {self.unique_id} is reporting a crop at {self.pos}.")
+    #         #pause for a moment (simulate reporting a crop)
+    #         return 
+        
+    #     ####   TODO : two drones at one crop ? 
+
+    #     #move randomly if no crop is found 
+    #     self.move_randomly()
+
+
+    #     #update position and heading dynamically (optional for dynamic arrowhead)
+    #     self.arrow_step()
 
 
     ######################################
