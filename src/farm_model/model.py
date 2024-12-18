@@ -3,8 +3,8 @@ warnings.filterwarnings("ignore", category  = FutureWarning)
 from mesa import Model, Agent
 from mesa.space import MultiGrid
 from mesa.time import BaseScheduler
-from agents import PickerRobot, ExtendedPicker
-from agents import DroneRobot, ExtendedDrone
+from farm_model.agents import PickerRobot, ExtendedPicker
+from farm_model.agents import DroneRobot, ExtendedDrone
 
 
 

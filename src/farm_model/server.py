@@ -9,8 +9,8 @@ from mesa.visualization import Choice
 warnings.filterwarnings("ignore", category  = FutureWarning)
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid
-from model import FarmModel
-from portrayal import farm_portrayal
+from .model import FarmModel
+from .portrayal import farm_portrayal
 
 # Set up the grid visualization
 print("Setting up CanvasGrid....")      # debug

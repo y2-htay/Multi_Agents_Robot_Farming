@@ -2,7 +2,7 @@
 import warnings
 warnings.filterwarnings("ignore", category  = FutureWarning)
  # Import the server from server.py
-from server import server
+from farm_model.server import server
 
 
 

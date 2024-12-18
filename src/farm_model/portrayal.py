@@ -1,7 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore", category  = FutureWarning)
-from model import WaterAgent, TreeAgent, CropAgent, PathAgent, BaseAgent
-from model import PickerRobot, DroneRobot, ExtendedPicker, ExtendedDrone
+from .model import WaterAgent, TreeAgent, CropAgent, PathAgent, BaseAgent
+from .model import PickerRobot, DroneRobot, ExtendedPicker, ExtendedDrone
 
 def farm_portrayal(agent):
     """

@@ -203,7 +203,7 @@ class DroneRobot(Agent):
 
     def check_for_crop(self):
         """ Check for mature crop to signal to the pickers"""
-        from model import CropAgent   #avoid circular import 
+        from .model import CropAgent   #avoid circular import 
         for agent in self.model.grid.get_cell_list_contents(self.pos):
             if isinstance(agent, CropAgent) and agent.growth_stage == "mature":
                 print(f"Drone {self.unique_id} has found a mature crop at {self.pos}")
@@ -526,7 +526,7 @@ class PickerRobot(Agent):
         Decide the next action based on the robot's state and surroundings.
         """
         print(f"PickerRobot {self.unique_id} is making a decision.")
-        from model import CropAgent
+        from .model import CropAgent
 
         # If the battery is depleted, return to base
         if self.battery <= 20:
@@ -613,7 +613,7 @@ class PickerRobot(Agent):
         Pick the strawberry if one is in the current cell
         """
         print(f"Hey I am ready to pickkkkkkkkkk the strawberry ")
-        from model import CropAgent     #imported locally 
+        from .model import CropAgent     #imported locally 
         
         reachable = self.Reach
         
@@ -645,7 +645,7 @@ class PickerRobot(Agent):
        Move toward the base to drop off crops, avoiding trees and slowing down in water.
        Uses BFS to find a valid path to the base.
        """
-       from model import TreeAgent, WaterAgent
+       from .model import TreeAgent, WaterAgent
 
        # Define the base coordinates
        base_x, base_y = 0, 0  # Assuming base is at (0, 0)   ## need to fix for new base position 
@@ -746,7 +746,7 @@ class PickerRobot(Agent):
         """ 
         Move the robot to a random neighboring cell, avoiding trees , Reduce speed when moving through water
         """
-        from model import TreeAgent, WaterAgent   
+        from .model import TreeAgent, WaterAgent   
         #from model import CropAgent
         # imported locally only before they are called / if imported globally at the top, it is circulr dependency with model.py
 
@@ -917,7 +917,7 @@ class ExtendedDrone(DroneRobot):
         Signal pickers at the base about the crop location.
         """
         print(f"Drone bout to signal pickerssss ")
-        from agents import PickerRobot
+        from .agents import PickerRobot
 
         # Find pickers in the "waiting" state
         pickers_to_signal = [
@@ -1126,7 +1126,7 @@ class ExtendedPicker(PickerRobot):
         """
         Pick crops at the current position.
         """
-        from model import CropAgent
+        from .model import CropAgent
         for agent in self.model.grid.get_cell_list_contents(self.pos):
             if isinstance(agent, CropAgent) and agent.growth_stage == "mature":
                print(f"Picker {self.unique_id} picked a crop at {self.pos}. Resetting to seed stage")
