@@ -128,7 +128,7 @@ class DroneRobot(Agent):
         
 
     ######################################
-    ### Check for crop ( Drone ) 
+    ### Check for crop ( Drone ) Basic + Extended 
     ######################################
 
 
@@ -263,7 +263,7 @@ class PickerRobot(Agent):
 
 
 #############################################################
-           ### Reach - Property (picker ) - From Basic 
+           ### Reach - Property (picker ) - Basic + Extended 
 #############################################################
 
 
@@ -282,7 +282,7 @@ class PickerRobot(Agent):
 
 
 #############################################################
-           ### is_busy - Property (picker ) - From Basic
+           ### is_busy - Property (picker ) - Basic + Extended
 #############################################################
 
     @property 
