@@ -78,7 +78,7 @@ class DroneRobot(Agent):
 
 
     ######################################
-    ### Step Function (Drone) Extended 
+    ### Step Function (Drone) Extended -- stepmakedecision working 
     ######################################
 
 
@@ -86,7 +86,32 @@ class DroneRobot(Agent):
         """
         Define the behavior of drones at each step.
         """
-        print(f"DroneRobot {self.unique_id} at position {self.pos} with battery {self.battery}")
+        print(f"DroneRobot {self.unique_id} at position {self.pos} with battery {self.battery}.")
+
+        # Make a decision and execute the corresponding action
+        action, arg = self.make_decision()
+        if hasattr(self, action):  # Safeguard against invalid actions
+            if arg is not None:
+                getattr(self, action)(arg)  # Call the method with an argument
+            else:
+                getattr(self, action)()  # Call the method without arguments
+            print(f"Drone {self.unique_id} executed: {action}.")
+        else:
+            print(f"Error: Drone {self.unique_id} does not have a valid action '{action}'.")
+
+
+
+    ######################################
+    ### Make Decision Function (Drone) Extended -- stepmakedecision working 
+    ######################################
+
+
+
+    def make_decision(self):
+        """
+        Decide the next action based on the drone's state, battery, and surroundings.
+        """
+        print(f"DroneRobot {self.unique_id} at position {self.pos} with battery {self.battery}.")
 
         # Decrease battery over time
         self.battery_tick += 1
@@ -97,34 +122,37 @@ class DroneRobot(Agent):
         # Return to base if battery is low
         if self.battery <= 20:
             print(f"Drone {self.unique_id} has low battery and is returning to base.")
-            self.return_to_base()
-            return
+            self.state = "returning"
+            self.arrow_step()  # Ensure arrow updates during movement
+            return "return_to_base", None
 
-        # If waiting for a picker to arrive, don't move
+        # If waiting for a picker to arrive
         if self.state == "waiting":
             print(f"Drone {self.unique_id} is waiting for a picker {self.picker_id_waiting} at {self.pos}.")
             if not self.check_for_crop():
-                self.state = 'searching'
+                self.state = "searching"
             # Check if a picker has arrived
-            if any(isinstance(agent, PickerRobot) and agent.pos == self.pos for agent in self.model.grid.get_cell_list_contents(self.pos)):
+            if any(
+                isinstance(agent, PickerRobot) and agent.pos == self.pos
+                for agent in self.model.grid.get_cell_list_contents(self.pos)
+            ):
                 print(f"Picker has arrived at {self.pos}. Drone {self.unique_id} will resume searching.")
                 self.state = "searching"
-            return
+            self.arrow_step()  # Arrow may change when waiting ends
+            return "wait", None
 
         # Look for crops
         if self.check_for_crop():
             print(f"Drone {self.unique_id} found a crop at {self.pos}. Signaling picker.")
-            self.signal_picker()
-            print(f"Drone going to signal picker ")
             self.state = "waiting"
-            return
+            self.arrow_step()  # Arrow adjusts when signaling
+            return "signal_picker", None
 
         # Move randomly if no crop is found
-        self.move_randomly()
+        self.arrow_step()  # Arrow adjusts with random movement
+        return "move_randomly", None
 
 
-        #update position and heading dynamically (optional for dynamic arrowhead)
-        self.arrow_step()
         
 
     ######################################
@@ -357,6 +385,14 @@ class PickerRobot(Agent):
 #     stay idle and wait for the signal
 
 
+
+
+
+
+
+
+
+
 #############################################################
            ### Make Decision (picker) ( Extended ) With Signalling --- working - stepmakedecison fixed 
 #############################################################
@@ -409,7 +445,7 @@ class PickerRobot(Agent):
         print(f"PickerRobot {self.unique_id} is in an unrecognized state: {self.state}. Defaulting to 'wait'.")
         return "wait", None
 
-
+        
 
 
 
