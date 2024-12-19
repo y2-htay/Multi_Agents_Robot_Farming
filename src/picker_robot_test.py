@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import Mock, patch
 from collections import deque
 from mesa import Model
-from src.farm_model.agents import PickerRobot  # Update import path
-from src.farm_model.model import CropAgent, TreeAgent, WaterAgent
+from farm_model.agents import PickerRobot  # Update import path
+from farm_model.model import CropAgent, TreeAgent, WaterAgent
 
 # Constants matching your implementation
 FREE = 1  # Based on the error showing state is 1 instead of "FREE"

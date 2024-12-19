@@ -1,13 +1,13 @@
 import unittest
 import mesa
 from mesa import Model
-from src.farm_model.agents import  DroneRobot, PickerRobot, ExtendedDrone, ExtendedPicker
-from src.farm_model.model import TreeAgent, WaterAgent, CropAgent, PathAgent, BaseAgent
+from farm_model.agents import  DroneRobot, PickerRobot, ExtendedDrone, ExtendedPicker
+from farm_model.model import TreeAgent, WaterAgent, CropAgent, PathAgent, BaseAgent
 
 class TestFarmModel(unittest.TestCase):
     def setUp(self):
         """Set up a FarmModel instance for testing."""
-        from src.farm_model.model import FarmModel  # Import here to avoid circular import
+        from farm_model.model import FarmModel  # Import here to avoid circular import
         self.model = FarmModel(width=29, height=25, num_drones=2, num_pickers=2, mode="Basic")
 
     def test_initialization(self):
@@ -54,7 +54,7 @@ class TestFarmModel(unittest.TestCase):
 
     def test_robot_placement_extended_mode(self):
         """Test robot placement in Extended mode."""
-        from src.farm_model.model import FarmModel
+        from farm_model.model import FarmModel
         extended_model = FarmModel(width=29, height=25, num_drones=2, num_pickers=2, mode="Extended")
         
         # Test extended drone robots
@@ -67,7 +67,7 @@ class TestFarmModel(unittest.TestCase):
 
     def test_invalid_mode(self):
         """Test that an invalid mode raises a ValueError."""
-        from src.farm_model.model import FarmModel
+        from farm_model.model import FarmModel
         with self.assertRaises(ValueError):
             FarmModel(width=29, height=25, num_drones=2, num_pickers=2, mode="Invalid")
 

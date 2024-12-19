@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import Mock, patch
 from mesa import Model
-from src.farm_model.agents import DroneRobot  # Update import path
-from src.farm_model.model import CropAgent, TreeAgent
+from farm_model.agents import DroneRobot  # Update import 
+from farm_model.model import CropAgent, TreeAgent
 
 class MockModel(Model):
     """Mock Model class that provides the minimum required attributes for Mesa Agent"""
