@@ -75,7 +75,8 @@ Novel Mode: Introduces market-based task allocation, where agents bid for tasks 
 
 **"Features that are not working "**
 - From Extended Mode:  I tried to implement the KPIs for task completion and efficiency , but, I had problems with data collection which broke the system. 
-
+- Tried working on A better randomness with seed ( As Displayed in Simulation GUI - 42)
+- Tried To use images from img file, but that has been glitching so couldn't use it
 
 
 **"Representations"**
@@ -85,9 +86,9 @@ Picker Robots: Represented as white circles.
 
 Drones: Represented as cyan arrowheads.
 
-Terrains: Include paths, trees, water, and base areas, differentiated by distinct colors.
+Terrains: Include paths ( brown), trees ( green), water (light blue ), and base areas( black ), differentiated by distinct colors.
 
-Crop Stages: Visualized using different colors to indicate growth stages (e.g., seed, immature, mature).
+Crop Stages: Visualized using different colors to indicate growth stages (e.g., seed (grey color ), immature( yellow color ) mature ( red color )).
 
 
 

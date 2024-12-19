@@ -69,20 +69,6 @@ class FarmModel(Model):
         water_ranges = [(x, y) for x in [15,16,17,18] for y in range(25)]
         
         
-#         #New Crops Coordinates 
-#         crops_coordinates = [
-#     (0, 4), (0, 5), (0, 12), (0, 13), (0, 20), (0, 23),
-#     (1, 7), (1, 8), (1, 9),
-#     (4, 5), (4, 6), (4, 15), (4, 16), (4, 21),
-#     (8, 8), (8, 11), (8, 18), (8, 19), (8, 20),
-#     (9, 3), (9, 4), (9, 15),
-#     (16, 5), (16, 6), (16, 9), (16, 14), (16, 15), (16, 19), (16, 20), (16, 23),
-#     (17, 2), (17, 9), (17, 12), (17, 19), (17, 20), (17, 23),
-#     (20, 3), (20, 4), (20, 13), (20, 21),
-#     (21, 0), (21, 7), (21, 10), (21, 13), (21, 18), (21, 19),
-#     (24, 5), (24, 6), (24, 11), (24, 12), (24, 16), (24, 21), (24, 22)
-# ]
-
 
         crops_coordinates = [
         (0,4),(1,4),(2,4)  , (0,5),(1,5),(2,5), (0,8),(1,8),(2,8), (0,12),(1,12),(2,12),(0,13),(1,13),(2,13),(0,18),(1,18),(2,18),(0,20),(1,20),(2,20), (0,23),(1,23),(2,23),(5,2),(6,2),(7,2),(5,5),(6,5),(7,5),(5,6),(6,6),(7,6),(5,10),(6,10),(7,10),(5,11),(6,11),(7,11),(5,15),(6,15),(7,15),
@@ -137,137 +123,6 @@ class FarmModel(Model):
         
     
 
-#############################################################
-           ### ROBOTS initialisation
-#############################################################
-
-        # # ADDING DRONES , 
-        # for i in range ( num_robots):
-        #     print(f"Attempting to place DroneRobot {i}...")    #debug
-        #     from agents import DroneRobot   
-        #     x = self.random.randint(0, self.grid.width -1)
-        #     y = self.random.randint(0, self.grid.height -1)
-        #     while not self.grid.is_cell_empty((x,y)):
-        #         x = self.random.randint(0, self.grid.width -1)
-        #         y = self.random.randint(0, self.grid.height -1)
-        #     print(f"Placing DroneRobot {i} at {(x, y)}")  # Debug print
-        #     drone_robot = DroneRobot( self.next_id(), (x,y), self)
-        #     print(f"Placing DroneRobot at {x}, {y}")
-        #     self.grid.place_agent(drone_robot, (x,y))
-        #     self.schedule.add(drone_robot)
-            
-        ########################################
-         ## Placing Drones Randomly in the grid 
-        ########################################
-
-
-        # ##num_robots = 2
-        # ## debug drone init ##
-        # for i in range(num_robots):
-        #     print(f"Attempting to place DroneRobot {i}...")
-        #     x = self.random.randint(0, self.grid.width - 1)
-        #     y = self.random.randint(0, self.grid.height - 1)
-        #     drone_robot = DroneRobot(self.next_id(), (x, y), self)
-        #     self.grid.place_agent(drone_robot, (x, y))
-        #     self.schedule.add(drone_robot)
-        #     print(f"DroneRobot {i} placed at {(x, y)}.")
-
-
-
-        ########################################
-         ## Placing Drones at the base  
-        ########################################
-
-
-        # ###num_robots = 2
-        # ###Placing Drones at base
-        # for i in range(num_drones):
-        #     if not base_coordinates:
-        #         print("No more available base cells for PickerRobots")
-        #         break
-
-        #     #Randomly select a base cell 
-        #     x, y = self.random.choice(base_coordinates)
-
-        #     print(f"Placing Drones at base Cell ({x}, {y})")    # debug
-            
-        #     # drone = 0
-        #     # if bla
-        #     #   var = 4
-        #     # 
-        #     # print(var)
-        #     drone_robot = DroneRobot(self.next_id(), (x,y), self)
-        #     self.grid.place_agent(drone_robot, (x,y))
-        #     self.schedule.add(drone_robot)
-
-
-            # ###remove selected coordinates to prevent duplicate placement 
-            # base_coordinates.remove((x,y))
-
-
-
-        ########################################
-         ## Placing PickerRobots Randomly in the grid  
-        ########################################
-
-
-        ##num_robots = 5
-        ##ADDING PICKER ROBOT , INITIALISATION  
-        ##Placing pickers ranomly -- For basic operation    #difference to last one working with battery 
-        ##robot placement anywhere apart from water and tree grids   ## works works works this one works 
-        # for i in range(num_robots):
-        #     while True:
-        #         x = self.random.randint(0, self.grid.width - 1)
-        #         y = self.random.randint(0, self.grid.height - 1)
-
-        #         # Get contents of the cell
-        #         contents = self.grid.get_cell_list_contents((x, y))
-
-        #         # Check conditions
-        #         has_tree_or_water = any(isinstance(agent, (TreeAgent, WaterAgent)) for agent in contents)
-        #         is_valid_cell = any(isinstance(agent, (PathAgent, BaseAgent)) for agent in contents)
-
-        #         if not has_tree_or_water and is_valid_cell:
-        #           print(f"Placing PickerRobot at ({x}, {y})")  # Debug
-        #           picker_robot = PickerRobot(self.next_id(), (x, y), self)
-        #           self.grid.place_agent(picker_robot, (x, y))
-        #           self.schedule.add(picker_robot)
-        #           break  # Exit loop after successfully placing
-        #         else:
-        #           print(f"Invalid cell for PickerRobot at ({x}, {y}), retrying...")  # Debug
-
-
-        ########################################
-         ## Placing PickerRobots at the Base
-        ########################################
-
-
-
-        # # #num_robots = 4
-        # ## placing pickers at base 
-        # for i in range(num_pickers):
-        #     if not base_coordinates:
-        #         print("No more available base cells for PickerRobots")
-        #         break
-
-        #     #Randomly select a base cell 
-        #     x, y = self.random.choice(base_coordinates)
-
-        #     print(f"Placing PickerRobot at base Cell ({x}, {y})")    # debug
-        #     picker_robot = PickerRobot(self.next_id(), (x,y), self)    # change the mode here, if mode == extended 
-
-        #     ## change the robot based on mode 
-        #     # if mode == 'basic':
-        #     #     picker_robot = PickerRobot(self.next_id(), (x,y), self) 
-        #     # elif mode == 'extended':
-        #     #     picker_robot = ExtendedPickerRobot(self.next_id(), (x,y), self) 
-            
-        #     self.grid.place_agent(picker_robot, (x,y))
-        #     self.schedule.add(picker_robot)
-
-
-            # ###remove selected coordinates to prevent duplicate placement 
-            # base_coordinates.remove((x,y))
 
 
 ##########################################################
@@ -416,34 +271,10 @@ class FarmModel(Model):
                     self.schedule.add(tree_agent)
     
     
-    #######################
-      ## Crop Function
-    #######################
-
-
-    # ##crops functions meant for overlapping on trees
-    # def create_crops(self, crops_coordinates):
-    #     for (x, y) in crops_coordinates:
-    #         #Check if the cell contains a TreeAgent
-    #         existing_agents = self.grid.get_cell_list_contents((x,y))
-    #         has_tree = any(isinstance(agent, TreeAgent)for agent in existing_agents)
-            
-            
-    #         if not has_tree:
-    #             #print(f"Skipping CropAgent at ({x},{y})")
-    #             continue      #skip this position if there is no tree
-            
-            
-    #         #place the CropAgent
-    #         #print(f"Placing CropAgent at ({x}, {y})")
-    #         crop_agent = CropAgent(self.next_id(), (x,y), self)
-    #         self.grid.place_agent(crop_agent, (x,y))
-    #         self.schedule.add(crop_agent)
-            
             
             
     #######################
-      ## Crop Function ( test for aging ) 
+      ## Crop Function 
     #######################
     
     def create_crops(self, crops_coordinates):
@@ -492,10 +323,7 @@ class FarmModel(Model):
             self.pos = (x,y)
             
     
-    # def step(self):
-    #     print("Advancing the model by one steppppppppp ")
-    #     self.log_cell_contents()      #inspect the grid contents at each step ( debug )
-    #     self.schedule.step()
+
     
      
 
@@ -531,18 +359,6 @@ class TreeAgent(BaseTerrains):
         super().__init__(_id, pos, model)
         #self.type = "tree"
         #self.pos = pos
-
-
-# class CropAgent(Agent):
-#     def __init__(self,  _id, pos, model):
-#         super().__init__( _id,  model)
-#         self.type = "crop"
-#         self.pos = pos
-#         #super().__init__(_id, model)
-
-######################
-## crop aging test 
-#####################
 
 
 class CropAgent(BaseTerrains):
@@ -597,10 +413,6 @@ class CropAgent(BaseTerrains):
 
 
 
-######## crop aging test ends here #########
-
-
-
 class PathAgent(BaseTerrains):
     def __init__(self, _id, pos, model):
         super().__init__( _id,pos,  model)
@@ -614,15 +426,6 @@ class BaseAgent(BaseTerrains):
         #self.type = "base"
         #self.pos = pos
         
-        
-        
-# class PickerRobot(Agent):
-#     def __init__(self, unique_id, pos, model):
-#         super().__init__(unique_id, model)
-#         self.type= "picker_robot"
-#         self.pos = pos
-
-
 
 
 #############################################################
@@ -640,28 +443,11 @@ def step(self):
     
 
 
-# # ### Debug GUI Test ######
-
-# model = FarmModel(width=29, height=25, num_robots=2)
-# for i in range(10):
-#     print(f"Step {i}")
-#     model.step()
-
-
-
 ################################################
 
 ###############################################
 
 
-        # if self.mode == "basic":
-        #     self.FarmModel()
-        # elif self.mode == "extended":
-        #     self.SpecialFarmModel()
-        # else:
-        #     raise ValueError(f"Unknown mode: {self.mode}")
-        
-        
 
         
 

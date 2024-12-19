@@ -78,24 +78,10 @@ def tree_portrayal(tree):
         #"y": tree.pos[1],
     }
 
-# def crop_portrayal(crop):
-#     """
-#     Portrayal for CropAgent.
-#     """
-#     if crop is None:
-#         raise AssertionError
-#     return {
-#         "Shape": "circle",
-#         "Color": "pink",
-#         "Layer": 1,
-#         "r": 0.8,
-#         "Filled": "true",
-#         #"x": crop.pos[0],
-#         #"y": crop.pos[1],
-#     }
+
 
 ####################################
-    #### Crop portrayl with aging  test
+    #### Crop portrayl with aging  
 ####################################
 
 def crop_portrayal(crop):
@@ -159,51 +145,6 @@ def base_portrayal(base):
     
 
 
-##### rect drone #####
-# def drone_robot_portrayal(drone_robot):
-#     """ 
-#     Portrayal for DroneRobot
-#     """
-#     if drone_robot is None:
-#         raise AssertionError
-#     return {
-#         "Shape": "rect",
-#        #"Color": "red" if picker_robot.is_busy else "green",
-#        "Color" :"cyan",
-#         "Layer": 2,
-#         #"r": 0.7,
-#         "w" : 1,
-#         "h" : 1,
-#         "Filled": "true",
-#     }
-
-
-##### arrowhead drone #####  without dynamic arrowhead movement 
-# def drone_robot_portrayal(drone_robot):
-#     """ 
-#     Portrayal for DroneRobot as an arrowHead
-#     """
-#     if drone_robot is None:
-#         raise AssertionError
-    
-#     # Assuming the drone has a heading or direction
-#     heading_x, heading_y = 0, 1 # Default direction: pointing right
-#     if hasattr(drone_robot, "heading"):
-#         heading_x, heading_y = drone_robot.heading
-
-#     return {
-#         "Shape": "arrowHead",  # Use arrowHead shape
-#         #"Color": "cyan",       # Color of the arrow
-#         "Color" : "#FFCCE5",    # light pink
-#         "Filled": "true",
-#         "Layer": 2,            # Above other elements
-#         "scale": 0.8,          # Size of the arrow
-#         "heading_x": heading_x,  # Direction of arrow on x-axis
-#         "heading_y": heading_y   # Direction of arrow on y-axis
-#     }
-
-
-
 def drone_robot_portrayal(agent):
     """ Portrayal for DroneRobot as an arrowhead """
     if isinstance(agent, DroneRobot):
@@ -221,20 +162,3 @@ def drone_robot_portrayal(agent):
             "id": agent.unique_id
         }
 
-
-# def drone_robot_portrayal(drone_robot):
-#     """ 
-#     Portrayal for DroneRobot
-#     """
-#     if drone_robot is None:
-#         raise AssertionError
-#     return{
-#         "Shape" : "rect",
-#         "Color" : "gray",
-#         "Layer" : 2,
-#         "Filled" : "true",
-#     }
-
-
-
-#def robot_portrayal(agent):

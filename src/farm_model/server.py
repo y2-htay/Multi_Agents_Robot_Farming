@@ -1,7 +1,4 @@
-# from mesa.visualization.ModularVisualization import ModularServer
-# from mesa.visualization.modules import CanvasGrid
-# from model import FarmModel
-# from portrayal import farm_portrayal
+
 
 import warnings
 from mesa.visualization import Slider
