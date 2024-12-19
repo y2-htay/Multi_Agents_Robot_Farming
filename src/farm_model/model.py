@@ -27,11 +27,7 @@ class FarmModel(Model):
         self.step_count = 0     # initialise step counter 
         self.movement = "random"
         
-        ##for switch
-        # if mode = 0 // basic
-        #   do this setup
-        # if mode = 1// extended
-        #   do this setup
+
 
 
 #############################################################
@@ -104,22 +100,17 @@ class FarmModel(Model):
 
         # Add terrain agents
        # self.create_water(start_point=(6,0), end_point=(6,24))
-        print("Setting up water...")
+        #print("Setting up water...")
         self.create_water(water_ranges)      #for new water coordinates loop 
-        print("Water setup complete.")
+        #print("Water setup complete.")
         self.create_trees(tree_ranges)
-        print("Tree setup complete.")
-    # #    # self.create_crops([
-    # #         (4,13), (4,14), (2, 8), (3, 8), (4, 8), (10,16), (10,17), 
-    # #     ])       # for old coordinates 
+        #print("Tree setup complete.")
         self.create_crops(crops_coordinates)     #for new coordinates   # created a list of coordinates separate instead of calling in the function 
-        print("Crop setup complete.")
-
-    # #    self.create_path(start_point=(1, 0), end_point=(1, 24))    #old path coordinates
+        #print("Crop setup complete.")
         self.create_path(path_coordinates)      #for new path coordinates;
-        print("Path setup complete.")
+        #print("Path setup complete.")
         self.create_base(base_coordinates)
-        print("Base setup complete.")
+        #print("Base setup complete.")
         
     
 
@@ -231,7 +222,7 @@ class FarmModel(Model):
     #######################
 
 
-    #New 
+
     def create_water(self, water_coordinates):
         for (x,y) in water_coordinates:
             #print (f"Placing WaterAgent at ({x}, {y})")
@@ -240,18 +231,6 @@ class FarmModel(Model):
             self.schedule.add(water_agent)
                     
 
-
-    # def create_trees(self, tree_coordinates):
-    #     for start_point, end_point in tree_coordinates:
-    #         start_x, start_y = start_point
-    #         end_x, end_y = end_point
-    #         for x in range(start_x, end_x + 1):
-    #             for y in range(start_y, end_y + 1):
-    #                 #print(f"Placing TreeAgent at ({x}, {y})")
-    #                 tree_agent = TreeAgent(self.next_id() ,(x, y), self)
-    #                 self.grid.place_agent(tree_agent, (x, y))
-    #                 self.schedule.add(tree_agent)
-    
      
 
     #######################
@@ -322,10 +301,17 @@ class FarmModel(Model):
             self.schedule.add(base_agent)
             self.pos = (x,y)
             
-    
+
+
+#############################################################
+           ### MODEL SIMULATION
+#############################################################
 
     
-     
+    #######################
+      ##  Step Function
+    #######################
+
 
     """ Farm Model Simulation starts here """
     def step(self):
@@ -427,19 +413,8 @@ class BaseAgent(BaseTerrains):
         #self.pos = pos
         
 
-
-#############################################################
-           ### MODEL SIMULATION
-#############################################################
-
         
-# important !!! to get the model started 
-def step(self):
-       """ 
-       Advance the model by one step. 
-       """
-       print("Advancing the model by one step.")    #debugging 
-       self.schedule.step()     #triggers all agents step methods 
+
     
 
 

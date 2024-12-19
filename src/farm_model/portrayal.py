@@ -7,9 +7,6 @@ def farm_portrayal(agent):
     """
     Determine the portrayal based on the agent's type.
     """
-    #print(f"Portraying agent: {agent} at position {getattr(agent, 'pos', None)}")  #debug
-    # if isinstance(agent, PickerRobot) or isinstance(agent, DroneRobot):
-    #     return robot_portrayal(agent)
     if isinstance (agent, (PickerRobot, ExtendedPicker)):
         return {
             "Shape": "circle",
@@ -19,10 +16,7 @@ def farm_portrayal(agent):
             "r": 0.7,
             "Layer" : 2,
             "id": agent.unique_id
-            #"r" : 0.7,
-            # "x": agent.pos[0],
-            # "y": agent.pos[1],
-            
+         
         }
     if isinstance(agent, (DroneRobot, ExtendedDrone)):
         return drone_robot_portrayal(agent)
@@ -56,9 +50,7 @@ def water_portrayal(water):
         "Filled": "true",
         "w": 1,
         "h": 1,
-        #"scale": 2,
-        #"x": water.pos[0],
-        #"y": water.pos[1],
+     
     }
 
 def tree_portrayal(tree):
@@ -74,8 +66,7 @@ def tree_portrayal(tree):
         "w": 1,
         "h": 1,
         "Filled": "true",
-        #"x": tree.pos[0],
-        #"y": tree.pos[1],
+     
     }
 
 
