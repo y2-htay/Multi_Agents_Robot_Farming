@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 ### "How To Run Unit Tests" 
 - Use the command:
-python -m unittest discover -s test -p "*_test.py"
+python3 -m unittest discover -s test -p "*_test.py"
 - The command can be used to run all the unit tests in one click 
 
 
